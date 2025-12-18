@@ -9,13 +9,13 @@ const Footer = () => {
 
         {/* Branding */}
         <div>
-<Link
-  to="/"
-  className="text-lg font-bold text-white"
-  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
->
-  SkillDuels
-</Link>
+            <Link
+              to="/home"
+              className="text-lg font-bold text-white"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            >
+              SkillDuels
+            </Link>
 
 
           <div className="text-sm text-white/60 mt-1">
@@ -28,24 +28,33 @@ const Footer = () => {
           <div>
             <div className="text-sm font-semibold">Product</div>
             <div className="mt-2 text-sm text-white/60 space-y-1">
-              <div>Features</div>
-            <Link
-  to="/leaderboard"
-  
-  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
->
-  Leaderboard
-</Link>
-              <div>Pricing</div>
+              {/* <div>Features</div> */}
+                  <div>
+                        <Link to="/features" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} > Features </Link>
+                  </div>
+                  
+              {/* <div>Pricing</div> */}
+                  <div>
+                       <Link to="/leaderboard" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} > Leaderboard </Link>
+                  </div>
             </div>
           </div>
 
           <div>
             <div className="text-sm font-semibold">Company</div>
             <div className="mt-2 text-sm text-white/60 space-y-1">
-              <div>About</div>
-              <div>Careers</div>
-              <div>Blog</div>
+              <div>
+                      <Link to="/about" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} > About </Link>
+              </div>
+
+              <div>
+                      <Link to="/contact" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} > Contact </Link>
+              </div>
+
+              {/* <div>Blog
+                   
+              </div> */}
+
             </div>
           </div>
         </div>
@@ -55,19 +64,19 @@ const Footer = () => {
           <div className="text-sm font-semibold">Follow us</div>
           <div className="flex gap-3 mt-3">
             <a
-              href="#"
+              href="https://www.linkedin.com/signup?trk=guest_homepage-basic_nav-header-join"
               className="w-9 h-9 rounded-lg flex items-center justify-center bg-white/5 hover:bg-white/10 transition"
             >
               <Linkedin className="w-5 h-5 text-white/70" />
             </a>
             <a
-              href="#"
+              href="https://x.com/"
               className="w-9 h-9 rounded-lg flex items-center justify-center bg-white/5 hover:bg-white/10 transition"
             >
               <Twitter className="w-5 h-5 text-white/70" />
             </a>
             <a
-              href="#"
+              href="https://github.com/"
               className="w-9 h-9 rounded-lg flex items-center justify-center bg-white/5 hover:bg-white/10 transition"
             >
               <Github className="w-5 h-5 text-white/70" />

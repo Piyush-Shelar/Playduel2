@@ -1,1 +1,55 @@
 @import "tailwindcss";
+
+/* Navbar active link animated ring */
+.nav-link{
+  position: relative;
+  padding: 6px 10px;
+  border-radius: 9999px;
+  color: rgba(255,255,255,0.65);
+  display: inline-block;
+  transition: color 200ms ease, background 200ms ease, transform 200ms ease;
+  z-index: 0;
+}
+.nav-link:hover{ color: white; }
+
+.nav-link.active{ color: white; }
+
+.nav-link.active::before{
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 9999px;
+  background: conic-gradient(from 0deg, #1f5cff, #00bcd4, #1f5cff);
+  z-index: -2;
+  padding: 3px;
+  /* mask out inner circle to create ring */
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), black calc(100% - 6px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 8px), black calc(100% - 6px));
+  animation: sd-rotate 2.5s linear infinite;
+  pointer-events: none;
+}
+
+.nav-link.active::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: linear-gradient(to bottom, #040506, #05060a); /* match navbar bg */
+  z-index: -1;
+  margin: 4px;
+  pointer-events: none;
+}
+
+@keyframes sd-rotate{ from{ transform: rotate(0deg);} to{ transform: rotate(360deg); } }
+
+/* Slightly larger ring on mobile */
+@media (max-width: 768px){
+  .nav-link{ padding: 8px 6px; }
+  .nav-link.active::before{ inset: -6px; padding: 4px; }
+  .nav-link.active::after{ margin: 6px; }
+}
+
+
+
+
+
