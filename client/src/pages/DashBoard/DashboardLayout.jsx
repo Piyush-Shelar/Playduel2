@@ -1,6 +1,8 @@
 import React from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { FaUser, FaComments, FaGamepad, FaPuzzlePiece } from "react-icons/fa";
+import { GiThreeFriends } from "react-icons/gi";
+
 
 export default function DashboardLayout({ user }) {
   const menu = [
@@ -8,6 +10,8 @@ export default function DashboardLayout({ user }) {
     { label: "Play Duel", path: "duel", icon: <FaGamepad /> },
     { label: "User Profile", path: "profile", icon: <FaUser /> },
     { label: "Chat", path: "chat", icon: <FaComments /> },
+    { label: "Friends", path: "friends", icon: <GiThreeFriends /> },
+
   ];
 const navigate = useNavigate();
   return (

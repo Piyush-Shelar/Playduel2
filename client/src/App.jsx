@@ -20,7 +20,7 @@ import PlayDuel from "./pages/DashBoard/PlayDuel";
 import Chat from "./pages/Chat";
 import DashboardArena from "./pages/DashBoard/DashBoardArena";
 
-
+import Friends from './Components/Friends'; 
 
 import './components/MusicControls.css'; // Add this line
 import { MusicProvider, MusicControls } from './Components/BackgroundMusic'; // Add this line
@@ -89,6 +89,7 @@ function App() {
           <Route path="duel" element={<PlayDuel />} />
           <Route path="profile" element={<UserProfile />} />
           <Route path="chat" element={<Chat />} />
+          <Route path="friends" element={<Friends />} />
         </Route>
       </Routes>
 
