@@ -1,118 +1,12 @@
-// import React, { useState } from "react";
-// import { motion, AnimatePresence } from "framer-motion";
-// import {Link} from "react-router-dom"
+
+
+// import React from "react";
+// import { motion } from "framer-motion";
 // import Navbar from "../Components/Navbar";
 // import Footer from "../Components/Footer";
-// // Full SkillDuels Landing Page (React + Tailwind + Framer Motion)
-// // - Single default export
-// // - Integrated Sign In / Sign Up modal (player auth UI only)
-// // - No trimmed sections
+// import LoginPopup from "../Components/LoginPopup";
 
-// const LoginModal = ({ open, onClose, mode = "signin", setMode }) => {
-//   return (
-//     <AnimatePresence>
-//       {open && (
-//         <motion.div
-//           key="login-modal"
-//           initial={{ opacity: 0 }}
-//           animate={{ opacity: 1 }}
-//           exit={{ opacity: 0 }}
-//           className="fixed inset-0 z-50 flex items-center justify-center"
-//         >
-//           <div
-//             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-//             onClick={onClose}
-//           />
-
-//           <motion.div
-//             initial={{ y: 20, opacity: 0 }}
-//             animate={{ y: 0, opacity: 1 }}
-//             exit={{ y: 20, opacity: 0 }}
-//             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-//             className="relative w-full max-w-md p-6 rounded-2xl bg-gradient-to-br from-[#06121f] to-[#02080f] border border-white/10 shadow-2xl"
-//           >
-//             <h2 className="text-xl font-bold text-white text-center">
-//               {mode === "signin" ? "Sign In" : "Sign Up"}
-//             </h2>
-//             <p className="text-white/50 text-sm text-center mt-1">
-//               {mode === "signin"
-//                 ? "Login to continue your SkillDuels journey"
-//                 : "Create your player account to start battling"}
-//             </p>
-
-//             <div className="mt-6 space-y-4">
-//               {mode === "signup" && (
-//                 <div>
-//                   <label className="text-white/70 text-sm">Full Name</label>
-//                   <input
-//                     placeholder="Full name"
-//                     className="w-full mt-1 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#1f5cff]"
-//                   />
-//                 </div>
-//               )}
-
-//               <div>
-//                 <label className="text-white/70 text-sm">Email</label>
-//                 <input
-//                   type="email"
-//                   placeholder="player@example.com"
-//                   className="w-full mt-1 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#1f5cff]"
-//                 />
-//               </div>
-
-//               <div>
-//                 <label className="text-white/70 text-sm">Password</label>
-//                 <input
-//                   type="password"
-//                   placeholder="••••••••"
-//                   className="w-full mt-1 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#1f5cff]"
-//                 />
-//               </div>
-
-//               <button className="w-full mt-2 px-4 py-3 rounded-lg bg-gradient-to-r from-[#1f5cff] to-[#00bcd4] text-black font-semibold cursor-pointer">
-//                 {mode === "signin" ? "Sign In" : "Create Account"}
-//               </button>
-
-//               <div className="text-center text-white/60 text-sm mt-3">
-//                 {mode === "signin" ? (
-//                   <>
-//                     Don't have an account?{' '}
-//                     <button
-//                       type="button"
-//                       className="text-[#60a5fa] underline cursor-pointer"
-//                       onClick={() => setMode('signup')}
-//                     >
-//                       Sign Up
-//                     </button>
-//                   </>
-//                 ) : (
-//                   <>
-//                     Already have an account?{' '}
-//                     <button
-//                       type="button"
-//                       className="text-[#60a5fa] underline cursor-pointer"
-//                       onClick={() => setMode('signin')}
-//                     >
-//                       Sign In
-//                     </button>
-//                   </>
-//                 )}
-//               </div>
-
-//               <button
-//                 onClick={onClose}
-//                 className="w-full mt-2 text-sm text-white/40 hover:text-white/70 transition cursor-pointer"
-//               >
-//                 Close
-//               </button>
-//             </div>
-//           </motion.div>
-//         </motion.div>
-//       )}
-//     </AnimatePresence>
-//   );
-// };
-
+// // Reusable components
 // const FeatureCard = ({ icon, title, desc, accent }) => (
 //   <motion.div
 //     whileHover={{ y: -8, scale: 1.01 }}
@@ -131,7 +25,10 @@
 //   <div className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-[#02101a] to-[#041226] border border-white/3">
 //     <div className="flex items-center gap-3">
 //       <div className="flex items-center gap-3">
-//         <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold" style={{ background: avatarColor }}>
+//         <div
+//           className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold"
+//           style={{ background: avatarColor }}
+//         >
 //           {name.split(' ')[0][0]}
 //         </div>
 //         <div>
@@ -147,29 +44,50 @@
 //   </div>
 // );
 
-// export default function LandingPage() {
-//   const [loginOpen, setLoginOpen] = useState(false);
-//   const [authMode, setAuthMode] = useState('signin');
-
+// export default function LandingPage({ showLogin, setShowLogin, user, setUser }) {
 //   return (
 //     <div className="min-h-screen bg-gradient-to-b from-[#040506] to-[#05060a] text-white font-inter">
-//       {/* NAV */}
-// <Navbar setAuthMode={setAuthMode} setLoginOpen={setLoginOpen}/>
+    
 
 //       {/* HERO */}
 //       <section className="relative overflow-hidden">
 //         <div className="max-w-7xl mx-auto px-6 md:px-8 py-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
 //           <div>
-//             <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="text-4xl md:text-6xl font-extrabold leading-tight text-white">Play. Learn. Conquer.<span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#6ee7b7] via-[#60a5fa] to-[#7c3aed]"> Gamified Quiz Battles.</span></motion.h1>
-//             <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }} className="mt-6 text-white/70 max-w-xl">SkillDuels turns study into a competitive sport — challenge peers, win rewards, gain XP and climb leaderboards in realtime quiz battles designed for engagement and mastery.</motion.p>
+//             <motion.h1
+//               initial={{ opacity: 0, y: 12 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               transition={{ delay: 0.08 }}
+//               className="text-4xl md:text-6xl font-extrabold leading-tight text-white"
+//             >
+//               Play. Learn. Conquer.
+//               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#6ee7b7] via-[#60a5fa] to-[#7c3aed]">
+//                 {" "}Gamified Quiz Battles.
+//               </span>
+//             </motion.h1>
+//             <motion.p
+//               initial={{ opacity: 0, y: 8 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               transition={{ delay: 0.16 }}
+//               className="mt-6 text-white/70 max-w-xl"
+//             >
+//               SkillDuels turns study into a competitive sport — challenge peers, win rewards, gain XP and climb leaderboards in realtime quiz battles designed for engagement and mastery.
+//             </motion.p>
 
 //             <div className="mt-8 flex flex-wrap gap-4">
-//               <motion.a whileHover={{ scale: 1.03 }} className="inline-flex items-center gap-3 px-5 py-3 rounded-lg bg-gradient-to-r from-[#1f5cff] to-[#00bcd4] text-black font-semibold shadow-lg cursor-pointer"  onClick={() => { setAuthMode('signin'); setLoginOpen(true); }}>
+//               <motion.button
+//                 whileHover={{ scale: 1.03 }}
+//                 className="inline-flex items-center gap-3 px-5 py-3 rounded-lg bg-gradient-to-r from-[#1f5cff] to-[#00bcd4] text-black font-semibold shadow-lg"
+//                 onClick={() => setShowLogin(true)}
+//               >
 //                 Start a Duel
 //                 <span className="text-xs text-white/50">→</span>
-//               </motion.a>
+//               </motion.button>
 
-//               <motion.a whileHover={{ scale: 1.03 }} className="inline-flex items-center gap-3 px-5 py-3 rounded-lg border border-white/6 text-white/80 cursor-pointer">
+//               <motion.a
+//                 whileHover={{ scale: 1.03 }}
+//                 className="inline-flex items-center gap-3 px-5 py-3 rounded-lg border border-white/6 text-white/80 cursor-pointer"
+//                 href="/features"
+//               >
 //                 Explore Features
 //               </motion.a>
 //             </div>
@@ -179,12 +97,10 @@
 //                 <div className="text-xs text-white/60">Active Battles</div>
 //                 <div className="text-xl font-bold mt-1">1,242</div>
 //               </div>
-
 //               <div className="px-4 py-3 rounded-xl bg-gradient-to-br from-[#041022] to-[#02101a] border border-white/3">
 //                 <div className="text-xs text-white/60">Daily Players</div>
 //                 <div className="text-xl font-bold mt-1">18.6k</div>
 //               </div>
-
 //               <div className="px-4 py-3 rounded-xl bg-gradient-to-br from-[#041022] to-[#02101a] border border-white/3">
 //                 <div className="text-xs text-white/60">Avg Match</div>
 //                 <div className="text-xl font-bold mt-1">6m 24s</div>
@@ -212,7 +128,6 @@
 //                       <div className="text-xs text-white/50">120 XP</div>
 //                     </div>
 //                   </div>
-
 //                   <div className="flex items-center gap-3">
 //                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#7c3aed] to-[#60a5fa] flex items-center justify-center font-bold text-black">M</div>
 //                     <div>
@@ -221,7 +136,6 @@
 //                     </div>
 //                   </div>
 //                 </div>
-
 //                 <div className="space-y-3">
 //                   <div className="flex items-center gap-3">
 //                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#f97316] to-[#f43f5e] flex items-center justify-center font-bold text-black">R</div>
@@ -230,7 +144,6 @@
 //                       <div className="text-xs text-white/50">110 XP</div>
 //                     </div>
 //                   </div>
-
 //                   <div className="flex items-center gap-3">
 //                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#34d399] to-[#60a5fa] flex items-center justify-center font-bold text-black">S</div>
 //                     <div>
@@ -253,7 +166,7 @@
 //           </div>
 //         </div>
 
-//         {/* decorative gradient */}
+//         {/* Decorative gradient */}
 //         <div className="pointer-events-none absolute right-0 top-24 w-96 h-96 rounded-full bg-gradient-to-br from-[#1f5cff]/10 to-[#7c3aed]/8 blur-3xl" />
 //       </section>
 
@@ -262,7 +175,9 @@
 //         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
 //           <div>
 //             <h3 className="text-2xl font-bold">Our mission</h3>
-//             <p className="mt-4 text-white/70">We transform passive study into active, social, competitive learning. SkillDuels creates micro-moments of mastery through head-to-head battles, real-time leaderboards, and meaningful rewards — helping learners stay motivated while building measurable skills.</p>
+//             <p className="mt-4 text-white/70">
+//               We transform passive study into active, social, competitive learning. SkillDuels creates micro-moments of mastery through head-to-head battles, real-time leaderboards, and meaningful rewards — helping learners stay motivated while building measurable skills.
+//             </p>
 
 //             <ul className="mt-6 space-y-3">
 //               <li className="flex items-start gap-3">
@@ -272,7 +187,6 @@
 //                   <div className="text-xs text-white/60">Short, repeatable battles that reinforce retention.</div>
 //                 </div>
 //               </li>
-
 //               <li className="flex items-start gap-3">
 //                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#7c3aed] to-[#60a5fa] flex items-center justify-center text-black font-bold">★</div>
 //                 <div>
@@ -285,7 +199,9 @@
 
 //           <div className="rounded-2xl p-6 bg-gradient-to-br from-[#031425] to-[#041224] border border-white/4">
 //             <h4 className="text-md font-semibold">Premium Insights</h4>
-//             <p className="text-sm text-white/60 mt-3">Detailed analytics for teachers and admins: question-level diagnostics, retention heatmaps, and class performance trends to convert play into measurable outcomes.</p>
+//             <p className="text-sm text-white/60 mt-3">
+//               Detailed analytics for teachers and admins: question-level diagnostics, retention heatmaps, and class performance trends to convert play into measurable outcomes.
+//             </p>
 
 //             <div className="mt-4 grid grid-cols-2 gap-3">
 //               <div className="p-3 rounded-lg bg-[#02121a] border border-white/3">
@@ -307,47 +223,12 @@
 //         <p className="text-white/60 mt-2">Everything you need to create competitive, fair, and fun quiz battles.</p>
 
 //         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-//           <FeatureCard
-//             icon={<span className="text-xl">⚔</span>}
-//             title="Battle Mode"
-//             desc="1v1, team battles, and tournaments with live question rounds and power-ups."
-//             accent="bg-gradient-to-br from-[#1f5cff] to-[#00bcd4]"
-//           />
-
-//           <FeatureCard
-//             icon={<span className="text-xl">🏆</span>}
-//             title="Leaderboards & Seasons"
-//             desc="Seasonal ladders, daily leaderboards, and rich profiles to showcase mastery."
-//             accent="bg-gradient-to-br from-[#7c3aed] to-[#60a5fa]"
-//           />
-
-//           <FeatureCard
-//             icon={<span className="text-xl">🎁</span>}
-//             title="Rewards & Badges"
-//             desc="Earn badges, redeem rewards, and unlock achievements that matter."
-//             accent="bg-gradient-to-br from-[#f97316] to-[#f43f5e]"
-//           />
-
-//           <FeatureCard
-//             icon={<span className="text-xl">⚡</span>}
-//             title="Realtime Gameplay"
-//             desc="Low-latency sockets, live scoring, and instant match results."
-//             accent="bg-gradient-to-br from-[#34d399] to-[#60a5fa]"
-//           />
-
-//           <FeatureCard
-//             icon={<span className="text-xl">🛠</span>}
-//             title="Admin Panel"
-//             desc="Powerful tools for creating battles, reviewing reports, and moderating."
-//             accent="bg-gradient-to-br from-[#0ea5a6] to-[#1f5cff]"
-//           />
-
-//           <FeatureCard
-//             icon={<span className="text-xl">📚</span>}
-//             title="Skill Categories"
-//             desc="STEM, Languages, Humanities and custom skill tags for focused practice."
-//             accent="bg-gradient-to-br from-[#8b5cf6] to-[#60a5fa]"
-//           />
+//           <FeatureCard icon={<span className="text-xl">⚔</span>} title="Battle Mode" desc="1v1, team battles, and tournaments with live question rounds and power-ups." accent="bg-gradient-to-br from-[#1f5cff] to-[#00bcd4]" />
+//           <FeatureCard icon={<span className="text-xl">🏆</span>} title="Leaderboards & Seasons" desc="Seasonal ladders, daily leaderboards, and rich profiles to showcase mastery." accent="bg-gradient-to-br from-[#7c3aed] to-[#60a5fa]" />
+//           <FeatureCard icon={<span className="text-xl">🎁</span>} title="Rewards & Badges" desc="Earn badges, redeem rewards, and unlock achievements that matter." accent="bg-gradient-to-br from-[#f97316] to-[#f43f5e]" />
+//           <FeatureCard icon={<span className="text-xl">⚡</span>} title="Realtime Gameplay" desc="Low-latency sockets, live scoring, and instant match results." accent="bg-gradient-to-br from-[#34d399] to-[#60a5fa]" />
+//           <FeatureCard icon={<span className="text-xl">🛠</span>} title="Admin Panel" desc="Powerful tools for creating battles, reviewing reports, and moderating." accent="bg-gradient-to-br from-[#0ea5a6] to-[#1f5cff]" />
+//           <FeatureCard icon={<span className="text-xl">📚</span>} title="Skill Categories" desc="STEM, Languages, Humanities and custom skill tags for focused practice." accent="bg-gradient-to-br from-[#8b5cf6] to-[#60a5fa]" />
 //         </div>
 //       </section>
 
@@ -359,8 +240,8 @@
 //             { title: "Register", hint: "Sign up or use SSO" },
 //             { title: "Challenge", hint: "Pick a friend or join open battles" },
 //             { title: "Play", hint: "Fast, fair rounds" },
-//             { title: "Earn XP", hint: "Win matches and collect XP" },
-//             { title: "Rank Up", hint: "Climb ladders & claim rewards" },
+//             { title: "Earn XP", hint: "Win matches & collect XP" },
+//             { title: "Rank Up", hint: "Climb up & claim rewards" },
 //           ].map((s, i) => (
 //             <div key={s.title} className="flex flex-col items-center text-center">
 //               <div className="w-20 h-20 rounded-full flex items-center justify-center bg-gradient-to-br from-[#071228] to-[#031021] border border-white/4">
@@ -368,13 +249,13 @@
 //               </div>
 //               <div className="mt-3 font-semibold">{s.title}</div>
 //               <div className="text-xs text-white/60 mt-1">{s.hint}</div>
-//               {i < 4 && <div className="hidden md:block h-0.5 w-full bg-white/3 mt-6" />}
+//               {i < 5 && <div className="hidden md:block h-0.5 w-full bg-white/3 mt-6" />}
 //             </div>
 //           ))}
 //         </div>
 //       </section>
 
-//       {/* LEADERBOARD PREVIEW */}
+//       {/* LEADERBOARD */}
 //       <section className="max-w-5xl mx-auto px-6 md:px-8 py-12">
 //         <h3 className="text-2xl font-bold">Leaderboard Preview</h3>
 //         <p className="text-white/60 mt-2">Top players this season — real XP, real bragging rights.</p>
@@ -384,13 +265,11 @@
 //             <div className="rounded-2xl p-4 bg-gradient-to-br from-[#02101a] to-[#041226] border border-white/3">
 //               <LeaderboardRow rank={1} name={"Ananya Sharma"} xp={152340} avatarColor={'linear-gradient(135deg,#7c3aed,#60a5fa)'} />
 //             </div>
-
 //             <div className="rounded-2xl p-4 bg-gradient-to-br from-[#02101a] to-[#041226] border border-white/3 grid grid-cols-2 gap-3">
 //               <LeaderboardRow rank={2} name={"Rohit Menon"} xp={143222} avatarColor={'linear-gradient(135deg,#1f5cff,#00bcd4)'} />
 //               <LeaderboardRow rank={3} name={"Lina Gomez"} xp={130450} avatarColor={'linear-gradient(135deg,#f97316,#f43f5e)'} />
 //             </div>
 //           </div>
-
 //           <div className="rounded-2xl p-6 bg-gradient-to-br from-[#031425] to-[#041224] border border-white/4">
 //             <div className="text-sm text-white/60">This Week</div>
 //             <div className="text-2xl font-bold mt-2">Top Movers</div>
@@ -404,9 +283,10 @@
 //                 <div className="text-sm font-semibold">+2,900 XP</div>
 //               </div>
 //             </div>
-
-//             <div className="mt-6">
-//               <button className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-[#1f5cff] to-[#00bcd4] text-black font-semibold cursor-pointer cursor-pointer">View Full Leaderboard</button>
+//             <div className="mt-6" >
+//               <button className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-[#1f5cff] to-[#00bcd4] text-black font-semibold cursor-pointer"  >
+//                 View Full Leaderboard
+//               </button>
 //             </div>
 //           </div>
 //         </div>
@@ -435,7 +315,7 @@
 //         </div>
 //       </section>
 
-//       {/* CTA BANNER */}
+//       {/* CTA */}
 //       <section className="max-w-7xl mx-auto px-6 md:px-8 py-12">
 //         <div className="rounded-3xl p-8 bg-gradient-to-r from-[#081628] to-[#031224] border border-white/4 flex flex-col md:flex-row items-center justify-between gap-6">
 //           <div>
@@ -448,15 +328,23 @@
 //           </div>
 //         </div>
 //       </section>
-     
-//       {/* LOGIN MODAL */}
-//       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} mode={authMode} setMode={setAuthMode} />
+
+//       {/* FOOTER */}
+//       {/* LOGIN POPUP */}
+// {showLogin && (
+//   <LoginPopup
+//     setShowLogin={setShowLogin}
+//     setUser={setUser} // <-- pass the user setter
+//   />
+// )}
 //     </div>
 //   );
 // }
 
+
 import React from "react";
 import { motion } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom"; // Add this import
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import LoginPopup from "../Components/LoginPopup";
@@ -500,9 +388,12 @@ const LeaderboardRow = ({ rank, name, xp, avatarColor }) => (
 );
 
 export default function LandingPage({ showLogin, setShowLogin, user, setUser }) {
+  const navigate = useNavigate(); // For programmatic navigation
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#040506] to-[#05060a] text-white font-inter">
-    
+      {/* <Navbar />  */}
+      {/* Added missing Navbar */}
 
       {/* HERO */}
       <section className="relative overflow-hidden">
@@ -538,12 +429,14 @@ export default function LandingPage({ showLogin, setShowLogin, user, setUser }) 
                 <span className="text-xs text-white/50">→</span>
               </motion.button>
 
-              <motion.a
-                whileHover={{ scale: 1.03 }}
-                className="inline-flex items-center gap-3 px-5 py-3 rounded-lg border border-white/6 text-white/80 cursor-pointer"
-              >
-                Explore Features
-              </motion.a>
+              <Link to="/features"> {/* TODO: Create Features page or redirect to features section */}
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  className="inline-flex items-center gap-3 px-5 py-3 rounded-lg border border-white/6 text-white/80 cursor-pointer"
+                >
+                  Explore Features
+                </motion.button>
+              </Link>
             </div>
 
             <div className="mt-8 grid grid-cols-3 gap-3 max-w-md">
@@ -672,7 +565,7 @@ export default function LandingPage({ showLogin, setShowLogin, user, setUser }) 
       </section>
 
       {/* FEATURES */}
-      <section className="max-w-7xl mx-auto px-6 md:px-8 py-12">
+      <section id="features" className="max-w-7xl mx-auto px-6 md:px-8 py-12"> {/* Added id for anchor link */}
         <h3 className="text-2xl font-bold">Features</h3>
         <p className="text-white/60 mt-2">Everything you need to create competitive, fair, and fun quiz battles.</p>
 
@@ -694,8 +587,8 @@ export default function LandingPage({ showLogin, setShowLogin, user, setUser }) 
             { title: "Register", hint: "Sign up or use SSO" },
             { title: "Challenge", hint: "Pick a friend or join open battles" },
             { title: "Play", hint: "Fast, fair rounds" },
-            { title: "Earn XP", hint: "Win matches and collect XP" },
-            { title: "Rank Up", hint: "Climb ladders & claim rewards" },
+            { title: "Earn XP", hint: "Win matches & collect XP" },
+            { title: "Rank Up", hint: "Climb up & claim rewards" },
           ].map((s, i) => (
             <div key={s.title} className="flex flex-col items-center text-center">
               <div className="w-20 h-20 rounded-full flex items-center justify-center bg-gradient-to-br from-[#071228] to-[#031021] border border-white/4">
@@ -703,7 +596,7 @@ export default function LandingPage({ showLogin, setShowLogin, user, setUser }) 
               </div>
               <div className="mt-3 font-semibold">{s.title}</div>
               <div className="text-xs text-white/60 mt-1">{s.hint}</div>
-              {i < 4 && <div className="hidden md:block h-0.5 w-full bg-white/3 mt-6" />}
+              {i < 5 && <div className="hidden md:block h-0.5 w-full bg-white/3 mt-6" />}
             </div>
           ))}
         </div>
@@ -738,9 +631,11 @@ export default function LandingPage({ showLogin, setShowLogin, user, setUser }) 
               </div>
             </div>
             <div className="mt-6">
-              <button className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-[#1f5cff] to-[#00bcd4] text-black font-semibold cursor-pointer">
-                View Full Leaderboard
-              </button>
+              <Link to="/leaderboard"> {/* Updated to use Link */}
+                <button className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-[#1f5cff] to-[#00bcd4] text-black font-semibold cursor-pointer">
+                  View Full Leaderboard
+                </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -763,7 +658,7 @@ export default function LandingPage({ showLogin, setShowLogin, user, setUser }) 
                   <div className="text-xs text-white/50">Verified learner</div>
                 </div>
               </div>
-              <div className="text-white/70">“{t.quote}”</div>
+              <div className="text-white/70">"{t.quote}"</div>
             </motion.div>
           ))}
         </div>
@@ -777,20 +672,32 @@ export default function LandingPage({ showLogin, setShowLogin, user, setUser }) 
             <div className="text-white/60 mt-2">Create battles, reward learners, and measure growth — all in one competitive platform.</div>
           </div>
           <div className="flex gap-4">
-            <button className="px-5 py-3 rounded-lg bg-gradient-to-r from-[#1f5cff] to-[#00bcd4] text-black font-semibold cursor-pointer">Start Free Trial</button>
-            <button className="px-5 py-3 rounded-lg border border-white/6 cursor-pointer">Contact Sales</button>
+            <button 
+              className="px-5 py-3 rounded-lg bg-gradient-to-r from-[#1f5cff] to-[#00bcd4] text-black font-semibold cursor-pointer"
+              onClick={() => setShowLogin(true)} // TODO: Change to signup route if separate page exists
+            >
+              Start Free Trial
+            </button>
+            <Link to="/contact"> {/* TODO: Create Contact page or component */}
+              <button className="px-5 py-3 rounded-lg border border-white/6 cursor-pointer">
+                Contact Sales
+              </button>
+            </Link>
           </div>
         </div>
       </section>
 
       {/* FOOTER */}
+      {/* <Footer />  */}
+      {/* Added missing Footer */}
+
       {/* LOGIN POPUP */}
-{showLogin && (
-  <LoginPopup
-    setShowLogin={setShowLogin}
-    setUser={setUser} // <-- pass the user setter
-  />
-)}
+      {showLogin && (
+        <LoginPopup
+          setShowLogin={setShowLogin}
+          setUser={setUser}
+        />
+      )}
     </div>
   );
 }

@@ -1,38 +1,4 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-// import LandingPage from './pages/LandingPage'
-// import { Route, Routes } from 'react-router-dom'
-// import LeaderBoard from './pages/LeaderBoard'
-// import UserProfile from './Components/UserProfile'
-// import QuizArena from './pages/QuizArena'
-// import Footer from './Components/Footer'
-// import LoginPopup from './Components/LoginPopup'
-// import Navbar from './Components/Navbar'
-
-
-// function App() {
-
-//   const [showLogin,setShowLogin] = useState(false)
-
-//   return (
-//     <>
-//   {showLogin ? <LoginPopup setShowLogin={setShowLogin}/> : <></>}
-//   <Navbar showLogin={showLogin} setShowLogin={setShowLogin}/>
-//     <Routes>
-// <Route path='/' element={ <LandingPage/>}/>
-// <Route path='/leaderboard' element={<LeaderBoard/>}/>
-// <Route path='/profile' element={<UserProfile/>}/>
-// <Route path='/arena' element={<QuizArena/>}/>
-//     </Routes>
-// <Footer/>
-    
-//     </>
-//   )
-// }
-
-// export default App
-
+import './App.css';
 
 import { useState, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
@@ -53,6 +19,19 @@ import DashboardLayout from "./pages/DashBoard/DashboardLayout";
 import PlayDuel from "./pages/DashBoard/PlayDuel";
 import Chat from "./pages/Chat";
 import DashboardArena from "./pages/DashBoard/DashBoardArena";
+
+import Friends from './Components/Friends'; 
+
+import './components/MusicControls.css'; // Add this line
+import { MusicProvider, MusicControls } from './Components/BackgroundMusic'; // Add this line
+import AutoPlayOverlay from './Components/AutoPlayOverlay';
+import useSound from './Components/useSound';
+
+import ProtectedRoute from "./Components/ProtectedRoute";
+
+
+
+
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -98,6 +77,7 @@ function App() {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/features" element={<Features />} />
         <Route path="/pricing" element={<Pricing />} />
+        <Route path="/home" element={<LandingPage />} />
 
         <Route
           path="/profile"
@@ -105,11 +85,13 @@ function App() {
         />
 
         {/* Dashboard with nested routes */}
-        <Route path="/dashboard" element={<DashboardLayout user={user} />}>
+        {/* <Route path="/dashboard" element={  <DashboardLayout user={user} />}> */}
+        <Route path="/dashboard" element={ <ProtectedRoute><DashboardLayout user={user} /></ProtectedRoute> }>
           <Route index element={<DashboardArena />} />
           <Route path="duel" element={<PlayDuel />} />
           <Route path="profile" element={<UserProfile />} />
           <Route path="chat" element={<Chat />} />
+          <Route path="friends" element={<Friends />} />
         </Route>
       </Routes>
 
