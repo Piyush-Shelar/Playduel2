@@ -1,6 +1,8 @@
 import React from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { FaUser, FaComments, FaGamepad, FaPuzzlePiece } from "react-icons/fa";
+import { GiThreeFriends } from "react-icons/gi";
+
 
 export default function DashboardLayout({ user }) {
   const menu = [
@@ -8,8 +10,19 @@ export default function DashboardLayout({ user }) {
     { label: "Play Duel", path: "duel", icon: <FaGamepad /> },
     { label: "User Profile", path: "profile", icon: <FaUser /> },
     { label: "Chat", path: "chat", icon: <FaComments /> },
+    { label: "Friends", path: "friends", icon: <GiThreeFriends /> },
+
   ];
 const navigate = useNavigate();
+
+const handleLogout = () => {
+  localStorage.removeItem("token"); // 🔑 destroy access
+  // setUser(null);                    // clear app state
+  navigate("/");                    // go home
+};
+
+
+
   return (
     <div className="h-screen flex flex-col bg-[#05060a] text-white">
 
@@ -24,7 +37,8 @@ const navigate = useNavigate();
             Hi, <span className="font-semibold">{user?.name || "User"}</span>
           </p>
 
-          <button onClick={()=>navigate("/")} className="flex items-center gap-2 bg-red-600/20 hover:bg-red-600/30 transition-all px-8 py-3 rounded-xl border border-red-500/40 shadow-[0_0_15px_rgba(255,0,0,0.4)] text-red-300 font-medium">
+          {/* <button onClick={()=>navigate("/")} className="flex items-center gap-2 bg-red-600/20 hover:bg-red-600/30 transition-all px-8 py-3 rounded-xl border border-red-500/40 shadow-[0_0_15px_rgba(255,0,0,0.4)] text-red-300 font-medium"> */}
+          <button onClick={handleLogout} className="flex items-center gap-2 bg-red-600/20 hover:bg-red-600/30 transition-all px-8 py-3 rounded-xl border border-red-500/40 shadow-[0_0_15px_rgba(255,0,0,0.4)] text-red-300 font-medium">
             Logout
           </button>
         </div>
