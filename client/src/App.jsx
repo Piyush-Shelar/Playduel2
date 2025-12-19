@@ -27,6 +27,7 @@ import { MusicProvider, MusicControls } from './Components/BackgroundMusic'; // 
 import AutoPlayOverlay from './Components/AutoPlayOverlay';
 import useSound from './Components/useSound';
 
+import ProtectedRoute from "./Components/ProtectedRoute";
 
 
 
@@ -84,7 +85,8 @@ function App() {
         />
 
         {/* Dashboard with nested routes */}
-        <Route path="/dashboard" element={<DashboardLayout user={user} />}>
+        {/* <Route path="/dashboard" element={  <DashboardLayout user={user} />}> */}
+        <Route path="/dashboard" element={ <ProtectedRoute><DashboardLayout user={user} /></ProtectedRoute> }>
           <Route index element={<DashboardArena />} />
           <Route path="duel" element={<PlayDuel />} />
           <Route path="profile" element={<UserProfile />} />
