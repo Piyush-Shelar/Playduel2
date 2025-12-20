@@ -29,8 +29,10 @@ import useSound from './Components/useSound';
 
 import ProtectedRoute from "./Components/ProtectedRoute";
 
+import Games from './pages/DashBoard/Games';
 
 
+import Memory from './pages/Games/Memory';
 
 
 function App() {
@@ -51,13 +53,16 @@ function App() {
   // Check if current route is a dashboard route
   const isDashboard = location.pathname.startsWith("/dashboard");
 
+  const isgamesPage = location.pathname.startsWith("/memory");
+
+
   return (
     <>
       {/* LOGIN POPUP */}
       {showLogin && <LoginPopup setShowLogin={setShowLogin} setUser={setUser} />}
 
       {/* NAVBAR - only if not dashboard */}
-      {!isDashboard && (
+      {!isDashboard && !isgamesPage && (
         <Navbar
           showLogin={showLogin}
           setShowLogin={setShowLogin}
@@ -84,6 +89,8 @@ function App() {
           element={user ? <UserProfile user={user} /> : <LandingPage user={user} setUser={setUser} showLogin={showLogin} setShowLogin={setShowLogin} />}
         />
 
+        <Route path="memory" element={<Memory />} />
+
         {/* Dashboard with nested routes */}
         {/* <Route path="/dashboard" element={  <DashboardLayout user={user} />}> */}
         <Route path="/dashboard" element={ <ProtectedRoute><DashboardLayout user={user} /></ProtectedRoute> }>
@@ -92,11 +99,15 @@ function App() {
           <Route path="profile" element={<UserProfile />} />
           <Route path="chat" element={<Chat />} />
           <Route path="friends" element={<Friends />} />
+          <Route path="games" element={<Games />} />
+
+          
+
         </Route>
       </Routes>
 
       {/* FOOTER - only if not dashboard */}
-      {!isDashboard && <Footer />}
+      {!isDashboard && !isgamesPage && <Footer />}
     </>
   );
 }
