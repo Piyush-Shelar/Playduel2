@@ -33,6 +33,7 @@ import Games from './pages/DashBoard/Games';
 
 
 import Memory from './pages/Games/Memory';
+import MemoryGame from './pages/Games/MemoryMatch';
 
 
 function App() {
@@ -53,7 +54,8 @@ function App() {
   // Check if current route is a dashboard route
   const isDashboard = location.pathname.startsWith("/dashboard");
 
-  const isgamesPage = location.pathname.startsWith("/memory");
+  // const isgamesPage = location.pathname.startsWith("/memory","/memorymatch");
+  const isgamesPage = location.pathname.startsWith("/memory") || location.pathname.startsWith("/memorymatch");
 
 
   return (
@@ -90,6 +92,7 @@ function App() {
         />
 
         <Route path="memory" element={<Memory />} />
+        {/* <Route path="memorymatch" element={<MemoryGame user={user} />} /> */}
 
         {/* Dashboard with nested routes */}
         {/* <Route path="/dashboard" element={  <DashboardLayout user={user} />}> */}
