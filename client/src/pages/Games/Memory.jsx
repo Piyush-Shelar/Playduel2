@@ -199,52 +199,81 @@ function MemoryGameCore({ mode, onEnd, score, setScore }) {
       </div>
 
       {/* Game grid */}
-      <div className="mb-8">
-        <div 
-          className="grid mx-auto gap-2 mb-4"
-          style={{ 
-            gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
-            maxWidth: `${gridSize * 80}px`
-          }}
-        >
-          {cells.map((idx) => {
-            const isInPattern = pattern.includes(idx) && displayPattern;
-            const isSelected = selected.includes(idx);
-            
-            return (
-              <button
-                key={idx}
-                onClick={() => handleSelect(idx)}
-                className={`
-                  aspect-square rounded-xl transition-all duration-300
-                  ${isInPattern 
-                    ? 'bg-gradient-to-r from-[#ffcc00] to-[#ff9900] shadow-lg shadow-[#ffcc00]/30' 
-                    : isSelected 
-                      ? cellColors[idx % cellColors.length] + ' shadow-lg'
-                      : 'bg-white/10 hover:bg-white/20'
-                  }
-                  ${displayPattern ? 'cursor-default' : 'cursor-pointer hover:scale-105'}
-                `}
-                disabled={displayPattern}
-              >
-                {isSelected && "✓"}
-              </button>
-            );
-          })}
+        <div className="mb-8">
+          <div className="text-xl font-bold mb-4 text-center">
+            {displayPattern ? "Memorize this pattern!" : "Recreate the pattern!"}
+          </div>
+          
+          {/* Grid - CHANGED TO MATCH MemoryMatch.jsx */}
+          <div className={`grid gap-3 mx-auto max-w-md ${
+            gridSize === 3 ? 'grid-cols-3' :
+            gridSize === 4 ? 'grid-cols-4' :
+            gridSize === 5 ? 'grid-cols-5' : 'grid-cols-6'
+          }`}>
+
+          {cells.map((idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => handleSelect(idx)}
+                                disabled={displayPattern}
+                                className={`
+                                  aspect-square rounded-xl flex items-center justify-center text-2xl font-bold
+                                  transition-all duration-300 relative overflow-hidden
+                                  ${displayPattern 
+                                    ? (pattern.includes(idx) 
+                                      ? cellColors[idx % cellColors.length] + ' scale-110' 
+                                      : 'bg-white/10 border border-white/20')
+                                    : (selected.includes(idx)
+                                      ? (pattern.includes(idx) 
+                                        ? cellColors[idx % cellColors.length] + ' scale-110' 
+                                        : 'bg-red-500/50 scale-110')
+                                      : 'bg-white/10 hover:bg-white/20 hover:scale-105')
+                                  }
+                                  ${displayPattern ? 'cursor-default' : 'cursor-pointer'}
+                                `}
+                              >
+                                {displayPattern && pattern.includes(idx) && (
+                                  <div className="animate-ping absolute inset-0 bg-white/30 rounded-xl"></div>
+                                )}
+                                {!displayPattern && selected.includes(idx) && (
+                                  <div className="text-white text-xl">✓</div>
+                                )}
+                                {displayPattern && pattern.includes(idx) && (
+                                  <div className="text-white text-2xl">★</div>
+                                )}
+                              </button>
+                          ))}
+
+           </div>
+        
+                {/* {displayPattern && (
+                  <div className="text-lg text-[#ffcc00] font-bold mb-4 animate-pulse">
+                    Memorize the pattern!
+                  </div>
+                )}
+                
+                {!displayPattern && (
+                  <div className="text-lg text-green-400 font-bold mb-4">
+                    Recreate the pattern!
+                  </div>
+                )} */}
         </div>
-        
-        {displayPattern && (
-          <div className="text-lg text-[#ffcc00] font-bold mb-4 animate-pulse">
-            Memorize the pattern!
-          </div>
-        )}
-        
-        {!displayPattern && (
-          <div className="text-lg text-green-400 font-bold mb-4">
-            Recreate the pattern!
-          </div>
-        )}
-      </div>
+
+                      {/* Pattern Progress - ADDED TO MATCH MemoryMatch.jsx */}
+              <div className="mt-8 mb-8">
+                <div className="flex justify-between items-center mb-2">
+                  <div className="text-white/60">Progress</div>
+                  <div className="text-white/60">
+                    {selected.length}/{pattern.length} cells
+                  </div>
+                </div>
+                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-[#a64ac9] to-[#7b2cbf] transition-all duration-300"
+                    style={{ width: `${(selected.length / pattern.length) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
 
       {/* Additional info */}
       {mode === "solo" && (

@@ -92,7 +92,7 @@ function App() {
         />
 
         <Route path="memory" element={<Memory />} />
-        {/* <Route path="memorymatch" element={<MemoryGame user={user} />} /> */}
+        <Route path="memorymatch" element={<MemoryGame user={user} />} />
 
         {/* Dashboard with nested routes */}
         {/* <Route path="/dashboard" element={  <DashboardLayout user={user} />}> */}
