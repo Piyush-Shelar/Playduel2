@@ -26,9 +26,9 @@ app.post("/register", async (req, res) => {
 
     const db=client.db("Users")
     const collec=db.collection("details")
-  const { fullName, email, password } = req.body;
+   const { fullName, email, password } = req.body;
 
-  const userExists = await collec.findOne({ email })
+   const userExists = await collec.findOne({ email })
 
   
   
@@ -125,4 +125,3 @@ app.get("/categories", async (req, res) => {
 
 
 app.listen(9000, () => console.log("Server running on 9000"));
-app.listen(9000, () => console.log("Server ready"));
