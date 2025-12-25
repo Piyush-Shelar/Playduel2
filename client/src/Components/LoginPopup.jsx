@@ -202,10 +202,15 @@ const LoginPopup = ({ setShowLogin, setUser }) => {
       const { token, user } = res.data;
 
       // Store token
-      localStorage.setItem("token", token);
+      // localStorage.setItem("token", token);
 
-      // Set user in App state
+      // // Set user in App state
+      // setUser(user);
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user)); // ✅ ADD THIS
       setUser(user);
+
 
       setShowLogin(false);
       navigate("/dashboard");
