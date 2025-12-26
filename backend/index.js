@@ -87,6 +87,48 @@ app.post("/login", async (req, res) => {
   });
 });
 
+
+/* GET CURRENT USER */
+app.get("/api/auth/me", async (req, res) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    return res.status(401).json({ message: "No token" });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    const client = new MongoClient(url);
+    await client.connect();
+
+    const db = client.db("Users");
+    const collec = db.collection("details");
+
+    const user = await collec.findOne({ id: decoded.userId });
+
+    await client.close();
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({
+      user: {
+        id: user.id,
+        name: user.fullName,
+        email: user.email
+      }
+    });
+  } catch (err) {
+    res.status(401).json({ message: "Invalid token" });
+  }
+});
+
+
+
 /* PROTECTED */
 app.get("/protected", (req, res) => {
   const authHeader = req.headers.authorization;
