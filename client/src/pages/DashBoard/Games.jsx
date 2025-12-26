@@ -87,6 +87,8 @@ export default function ArcadeGames() {
         </p>
       </div>
 
+
+
       {/* Search Bar */}
       <div className="w-full max-w-2xl mb-10">
         <input
