@@ -35,6 +35,7 @@ import Games from './pages/DashBoard/Games';
 import Memory from './pages/Games/Memory';
 import MemoryGame from './pages/Games/MemoryMatch';
 
+import Reflex from './pages/Games/Reflex';
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -87,7 +88,9 @@ function App() {
   const isDashboard = location.pathname.startsWith("/dashboard");
 
   // const isgamesPage = location.pathname.startsWith("/memory","/memorymatch");
-  const isgamesPage = location.pathname.startsWith("/memory") || location.pathname.startsWith("/memorymatch");
+  const isgamesPage = location.pathname.startsWith("/memory") || 
+                      location.pathname.startsWith("/memorymatch") || 
+                      location.pathname.startsWith("/reflex") ;
 
 
   return (
@@ -125,6 +128,7 @@ function App() {
 
         <Route path="memory" element={<Memory />} />
         <Route path="memorymatch" element={<MemoryGame user={user} />} />
+        <Route path="reflex" element={<Reflex/>} />
 
         {/* Dashboard with nested routes */}
         {/* <Route path="/dashboard" element={  <DashboardLayout user={user} />}> */}
