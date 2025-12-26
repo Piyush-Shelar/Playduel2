@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors"
 import { ConnectDB } from "./configs/db.js";
 import gameRoutes from "./routes/game.routes.js";
+import adminRouter from "./routes/adminRoute.js";
 
 
 const app = express()
@@ -15,6 +16,8 @@ app.use("/api/game",gameRoutes)
 
 
 ConnectDB()
+//api endpoints
+app.use("/api/manage",adminRouter)
 
 app.get("/",(req,res)=>{
     res.send("Server is Running ! ")
