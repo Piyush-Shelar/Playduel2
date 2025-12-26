@@ -25,133 +25,224 @@ function MemoryGameCore({ mode, onEnd, score, setScore }) {
     "bg-gradient-to-r from-[#ff9933] to-[#ffcc66]", // Orange
   ];
 
-  const startRound = () => {
-    const positions = Array.from({ length: gridSize * gridSize }, (_, i) => i);
-    const randomPattern = [];
-    const patternLength = gridSize + 2; // Pattern gets longer with grid size
+  // const startRound = () => {
+  //   const positions = Array.from({ length: gridSize * gridSize }, (_, i) => i);
+  //   const randomPattern = [];
+  //   const patternLength = gridSize + 2; // Pattern gets longer with grid size
     
-    while (randomPattern.length < patternLength) {
-      const pick = positions[Math.floor(Math.random() * positions.length)];
-      if (!randomPattern.includes(pick)) randomPattern.push(pick);
-    }
+  //   while (randomPattern.length < patternLength) {
+  //     const pick = positions[Math.floor(Math.random() * positions.length)];
+  //     if (!randomPattern.includes(pick)) randomPattern.push(pick);
+  //   }
     
-    setPattern(randomPattern);
-    setDisplayPattern(true);
-    setSelected([]);
+  //   setPattern(randomPattern);
+  //   setDisplayPattern(true);
+  //   setSelected([]);
     
-    // Show pattern for varying time based on difficulty
-    const showTime = 3000 - (gridSize * 200); // Less time as grid gets bigger
-    setTimeout(() => {
-      setDisplayPattern(false);
-      if (mode === "duo") {
-        setTimeLeft(15); // Shorter time for duo mode
+  //   // Show pattern for varying time based on difficulty
+  //   const showTime = 3000 - (gridSize * 200); // Less time as grid gets bigger
+  //   setTimeout(() => {
+  //     setDisplayPattern(false);
+  //     if (mode === "duo") {
+  //       setTimeLeft(15); // Shorter time for duo mode
+  //     }
+  //   }, Math.max(1500, showTime));
+  // };
+
+const startRound = () => {
+  const positions = Array.from({ length: gridSize * gridSize }, (_, i) => i);
+  const randomPattern = [];
+  const patternLength = gridSize + 2;
+
+  while (randomPattern.length < patternLength) {
+    const pick = positions[Math.floor(Math.random() * positions.length)];
+    if (!randomPattern.includes(pick)) randomPattern.push(pick);
+  }
+
+  setPattern(randomPattern);
+  setDisplayPattern(true);
+  setSelected([]);
+
+  setTimeLeft(15); // ✅ FIXED: 15 seconds EVERY round
+
+  clearInterval(timerRef.current);
+  timerRef.current = setInterval(() => {
+    setTimeLeft(prev => {
+      if (prev <= 1) {
+        clearInterval(timerRef.current);
+        onEnd(); // ✅ end game cleanly
+        return 0;
       }
-    }, Math.max(1500, showTime));
-  };
+      return prev - 1;
+    });
+  }, 1000);
+
+  setTimeout(() => {
+    setDisplayPattern(false);
+  }, 3000); // pattern visible time
+};
+
+
+  // useEffect(() => {
+  //   if (mode === "solo") {
+  //     setTimeLeft(30);
+  //     timerRef.current = setInterval(() => {
+  //       setTimeLeft(prev => {
+  //         if (prev <= 1) {
+  //           clearInterval(timerRef.current);
+  //           onEnd();
+  //           return 0;
+  //         }
+  //         return prev - 1;
+  //       });
+  //     }, 1000);
+  //   }
+    
+  //   startRound();
+    
+  //   return () => clearInterval(timerRef.current);
+  // }, [mode]);
+
+  // useEffect(() => {
+  //   if (mode === "duo" && !displayPattern && timeLeft > 0) {
+  //     const timer = setInterval(() => {
+  //       setTimeLeft(prev => {
+  //         if (prev <= 1) {
+  //           clearInterval(timer);
+  //           // End turn if time runs out
+  //           endTurn(false);
+  //           return 0;
+  //         }
+  //         return prev - 1;
+  //       });
+  //     }, 1000);
+      
+  //     return () => clearInterval(timer);
+  //   }
+  // }, [mode, displayPattern, timeLeft]);
+
+
+
+  // const handleSelect = (idx) => {
+  //   if (displayPattern || selected.includes(idx)) return;
+
+  //   const newSel = [...selected, idx];
+  //   setSelected(newSel);
+    
+  //   // Check if this was the correct next cell
+  //   if (newSel.length <= pattern.length) {
+  //     // const correct = pattern[newSel.length - 1] === idx;
+      
+  //     // if (!correct) {
+  //     //   // Wrong selection
+  //     //   if (mode === "solo") {
+  //     //     setLives(prev => {
+  //     //       if (prev <= 1) {
+  //     //         onEnd();
+  //     //         return 0;
+  //     //       }
+  //     //       return prev - 1;
+  //     //     });
+  //     //     setCombo(0);
+  //     //   } else {
+  //     //     endTurn(false);
+  //     //   }
+  //     //   setSelected([]); // ADD THIS LINE to clear selection on wrong choice
+  //     //   return;
+  //     // }
+      
+  //     // Correct selection
+  //     if (newSel.length === pattern.length) {
+  //       // Completed the pattern
+  //       const baseScore = 10;
+  //       const comboBonus = combo * 5;
+  //       const difficultyBonus = gridSize * 2;
+  //       const perfectBonus = pattern.length === newSel.length ? 15 : 0;
+  //       const roundScore = baseScore + comboBonus + difficultyBonus + perfectBonus;
+        
+  //       if (mode === "solo") {
+  //         setScore({ ...score, playerA: score.playerA + roundScore });
+  //         setCombo(prev => prev + 1);
+  //         setRoundsPerfect(prev => prev + 1);
+          
+  //         if (roundsPerfect + 1 >= 4 && lives < 3) {
+  //           setLives(prev => prev + 1);
+  //           setRoundsPerfect(0);
+  //         }
+          
+  //         if (gridSize < 5 && round % 2 === 0) {
+  //           setGridSize(prev => prev + 1);
+  //         }
+  //       } else {
+  //         // Duo mode
+  //         if (duoTurn === 0) {
+  //           setScore({ ...score, playerA: score.playerA + roundScore });
+  //         } else {
+  //           setScore({ ...score, playerB: score.playerB + roundScore });
+  //         }
+  //         endTurn(true);
+  //       }
+        
+  //       setRound(prev => prev + 1);
+  //       startRound();
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
+  startRound();
+  return () => clearInterval(timerRef.current);
+}, []);
+
+
+
+const handleSelect = (idx) => {
+  if (displayPattern || selected.includes(idx)) return;
+
+  // ❌ Wrong tile (not part of pattern)
+  if (!pattern.includes(idx)) {
     if (mode === "solo") {
-      setTimeLeft(30);
-      timerRef.current = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            clearInterval(timerRef.current);
-            onEnd();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    
-    startRound();
-    
-    return () => clearInterval(timerRef.current);
-  }, [mode]);
-
-  useEffect(() => {
-    if (mode === "duo" && !displayPattern && timeLeft > 0) {
-      const timer = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            // End turn if time runs out
-            endTurn(false);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      
-      return () => clearInterval(timer);
-    }
-  }, [mode, displayPattern, timeLeft]);
-
-  const handleSelect = (idx) => {
-    if (displayPattern || selected.includes(idx)) return;
-
-    const newSel = [...selected, idx];
-    setSelected(newSel);
-    
-    // Check if this was the correct next cell
-    if (newSel.length <= pattern.length) {
-      const correct = pattern[newSel.length - 1] === idx;
-      
-      if (!correct) {
-        // Wrong selection
-        if (mode === "solo") {
-          setLives(prev => {
-            if (prev <= 1) {
-              onEnd();
-              return 0;
-            }
-            return prev - 1;
-          });
-          setCombo(0);
-        } else {
-          endTurn(false);
+      setLives(prev => {
+        if (prev <= 1) {
+          onEnd(); // ✅ game over
+          return 0;
         }
-        setSelected([]); // ADD THIS LINE to clear selection on wrong choice
-        return;
-      }
-      
-      // Correct selection
-      if (newSel.length === pattern.length) {
-        // Completed the pattern
-        const baseScore = 10;
-        const comboBonus = combo * 5;
-        const difficultyBonus = gridSize * 2;
-        const perfectBonus = pattern.length === newSel.length ? 15 : 0;
-        const roundScore = baseScore + comboBonus + difficultyBonus + perfectBonus;
-        
-        if (mode === "solo") {
-          setScore({ ...score, playerA: score.playerA + roundScore });
-          setCombo(prev => prev + 1);
-          setRoundsPerfect(prev => prev + 1);
-          
-          if (roundsPerfect + 1 >= 4 && lives < 3) {
-            setLives(prev => prev + 1);
-            setRoundsPerfect(0);
-          }
-          
-          if (gridSize < 5 && round % 2 === 0) {
-            setGridSize(prev => prev + 1);
-          }
-        } else {
-          // Duo mode
-          if (duoTurn === 0) {
-            setScore({ ...score, playerA: score.playerA + roundScore });
-          } else {
-            setScore({ ...score, playerB: score.playerB + roundScore });
-          }
-          endTurn(true);
-        }
-        
-        setRound(prev => prev + 1);
-        startRound();
-      }
+        return prev - 1;
+      });
+      setSelected([]); // reset attempt
+    } else {
+      endTurn(false);
     }
-  };
+    return;
+  }
+
+  // ✅ Correct tile (order does NOT matter)
+  const newSelected = [...selected, idx];
+  setSelected(newSelected);
+
+  // 🎉 Pattern completed
+  if (newSelected.length === pattern.length) {
+    if (mode === "solo") {
+      setScore(prev => ({
+        ...prev,
+        playerA: prev.playerA + 10 // ✅ +10 per correct round
+      }));
+    } else {
+      setScore(prev => ({
+        ...prev,
+        [duoTurn === 0 ? "playerA" : "playerB"]:
+          prev[duoTurn === 0 ? "playerA" : "playerB"] + 10
+      }));
+    }
+
+    setSelected([]);
+    setRound(prev => prev + 1);
+    startRound(); // next round
+  }
+};
+
+
+
 
   const endTurn = (success) => {
     if (mode === "duo") {
@@ -319,6 +410,8 @@ function MemoryGameCore({ mode, onEnd, score, setScore }) {
 }
 
 export default function MemoryGamePage() {
+  const [leaderboard, setLeaderboard] = useState([]);
+
   const navigate = useNavigate();
   const [gameMode, setGameMode] = useState("solo");
   const [streakData, setStreakData] = useState([
@@ -390,6 +483,64 @@ export default function MemoryGamePage() {
       setScreen("menu");
     }
   };
+
+  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const userId = currentUser?.id;
+
+
+  const sendScoreToBackend = async (finalScore) => {
+  try {
+    await fetch("http://localhost:4080/api/game/attempt", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        // userId: "test-user-frontend", // TEMP (JWT later)
+        userId,
+        // userName: currentUser.fullName, // ✅ REAL NAME
+        userName: currentUser.name,
+        game: "memory",
+        score: finalScore,
+      }),
+    });
+
+    console.log("Score sent to backend");
+  } catch (error) {
+    console.error("Failed to send score", error);
+  }
+};
+
+
+const fetchLeaderboard = async () => {
+  try {
+    const res = await fetch("http://localhost:4080/api/game/leaderboard");
+    const data = await res.json();
+
+    // transform backend data → UI-friendly format
+    const formatted = data.map((item, index) => ({
+      rank: index + 1,
+      name: item.name || item.userId, 
+      // name: item._id,              // userId for now
+      score: item.bestScore,
+      // isYou: item._id === "test-user-frontend" // TEMP (JWT later)
+      isYou: item.userId === "test-user-frontend" // TEMP (JWT later)
+    }));
+
+    setLeaderboard(formatted);
+  } catch (err) {
+    console.error("Failed to fetch leaderboard", err);
+  }
+};
+
+
+
+
+useEffect(() => {
+  fetchLeaderboard();
+}, []);
+
+
 
   useEffect(() => {
     if (screen === "countdown") {
@@ -625,11 +776,12 @@ export default function MemoryGamePage() {
             <div className="bg-[#0f0f14]/50 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
               <h3 className="text-xl font-bold mb-4">🏆 Leaderboard</h3>
               <div className="space-y-3">
-                {[
-                  { rank: 1, name: "You", score: 850, isYou: true },
-                  { rank: 2, name: "Alex", score: 1200 },
-                  { rank: 3, name: "Sam", score: 1150 },
-                ].map((player) => (
+                  {/* {[
+                    { rank: 1, name: "You", score: 850, isYou: true },
+                    { rank: 2, name: "Alex", score: 1200 },
+                    { rank: 3, name: "Sam", score: 1150 },
+                  ] */}
+                {leaderboard.map((player) => (
                   <div
                     key={player.rank}
                     className={`flex items-center justify-between p-3 rounded-xl ${
@@ -730,7 +882,25 @@ export default function MemoryGamePage() {
       {screen === "gameplay" && (
         <MemoryGameCore 
           mode={gameMode} 
-          onEnd={() => setScreen("results")}
+          // onEnd={() => setScreen("results")}
+          onEnd={async () => {
+              const finalScore =
+              gameMode === "solo"
+                ? score.playerA
+                : Math.max(score.playerA, score.playerB);
+
+            // sendScoreToBackend(finalScore);
+            // setScreen("results");
+            
+
+
+            await sendScoreToBackend(finalScore);
+            fetchLeaderboard(); // ✅ refresh leaderboard
+            setScreen("results");
+
+          }}
+
+          
           score={score}
           setScore={setScore}
         />

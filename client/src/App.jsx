@@ -39,7 +39,39 @@ import MemoryGame from './pages/Games/MemoryMatch';
 function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true); // ⏳ auth check in progress
   const location = useLocation();
+
+    // 🔁 RESTORE USER ON PAGE REFRESH / HARD RELOAD
+ useEffect(() => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    setAuthLoading(false); // ❌ no token, stop loading
+    return;
+  }
+
+  fetch("http://localhost:9000/api/auth/me", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Invalid token");
+      return res.json();
+    })
+    .then((data) => {
+      setUser(data.user);       // ✅ restore user
+      setAuthLoading(false);    // ✅ auth check complete
+    })
+    .catch(() => {
+      localStorage.removeItem("token");
+      setUser(null);
+      setAuthLoading(false);    // ❌ auth failed, stop loading
+    });
+}, []);
+
+
 
   // Close login on route change
   useEffect(() => {
@@ -96,7 +128,7 @@ function App() {
 
         {/* Dashboard with nested routes */}
         {/* <Route path="/dashboard" element={  <DashboardLayout user={user} />}> */}
-        <Route path="/dashboard" element={ <ProtectedRoute><DashboardLayout user={user} /></ProtectedRoute> }>
+        <Route path="/dashboard" element={ <ProtectedRoute user={user} authLoading={authLoading} ><DashboardLayout user={user} /></ProtectedRoute> }>
           <Route index element={<DashboardArena />} />
           <Route path="duel" element={<PlayDuel />} />
           <Route path="profile" element={<UserProfile />} />
