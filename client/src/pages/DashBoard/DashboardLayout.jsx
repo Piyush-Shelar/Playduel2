@@ -20,6 +20,8 @@ const navigate = useNavigate();
 
 const handleLogout = () => {
   localStorage.removeItem("token"); // 🔑 destroy access
+  localStorage.removeItem("user");
+
   // setUser(null);                    // clear app state
   navigate("/");                    // go home
 };

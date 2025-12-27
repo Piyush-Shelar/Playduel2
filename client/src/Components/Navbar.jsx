@@ -30,7 +30,7 @@ const Navbar = ({ showLogin, setShowLogin }) => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6 text-sm text-white/60">
-          <NavLink to="/home" className={({isActive}) => `nav-link transition ${isActive? 'active':''}`}>Home</NavLink>
+          <NavLink to="/" className={({isActive}) => `nav-link transition ${isActive? 'active':''}`}>Home</NavLink>
           <NavLink to="/about" className={({isActive}) => `nav-link transition ${isActive? 'active':''}`}>About</NavLink>
           <NavLink to="/features" className={({isActive}) => `nav-link transition ${isActive? 'active':''}`}>Features</NavLink>
           <NavLink to="/leaderboard" className={({isActive}) => `nav-link transition ${isActive? 'active':''}`}>Leaderboard</NavLink>
