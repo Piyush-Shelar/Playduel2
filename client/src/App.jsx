@@ -39,9 +39,25 @@ import Reflex from './pages/Games/Reflex';
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
+        const [user, setUser] = useState(() => {
+        const savedUser = localStorage.getItem("user");
+        return savedUser ? JSON.parse(savedUser) : null;
+    });
+
+
+
   const [authLoading, setAuthLoading] = useState(true); // ⏳ auth check in progress
   const location = useLocation();
+  const API = import.meta.env.VITE_API_BASE_URL;
+
+useEffect(() => {
+  const savedUser = localStorage.getItem("user");
+  if (savedUser && !user) {
+    setUser(JSON.parse(savedUser));
+  }
+}, []);
+
 
     // 🔁 RESTORE USER ON PAGE REFRESH / HARD RELOAD
  useEffect(() => {
@@ -52,7 +68,8 @@ function App() {
     return;
   }
 
-  fetch("http://localhost:9000/api/auth/me", {
+  // fetch("http://localhost:9000/api/auth/me", {
+  fetch(`${API}/api/users/me`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -61,10 +78,34 @@ function App() {
       if (!res.ok) throw new Error("Invalid token");
       return res.json();
     })
+    // .then((data) => {
+    //   setUser(data);       // ✅ restore user
+    //   setAuthLoading(false);    // ✅ auth check complete
+    // })
+
+
     .then((data) => {
-      setUser(data.user);       // ✅ restore user
-      setAuthLoading(false);    // ✅ auth check complete
-    })
+          setUser({
+            id: data._id,
+            name: data.fullName,
+            email: data.email,
+          });
+          setAuthLoading(false);
+        })
+
+//     .then((data) => {
+//   const normalizedUser = {
+//     id: data._id,
+//     name: data.fullName,
+//     email: data.email,
+//   };
+
+//   setUser(normalizedUser);
+//   localStorage.setItem("user", JSON.stringify(normalizedUser));
+//   setAuthLoading(false);
+// })
+
+
     .catch(() => {
       localStorage.removeItem("token");
       setUser(null);
@@ -119,7 +160,7 @@ function App() {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/features" element={<Features />} />
         <Route path="/pricing" element={<Pricing />} />
-        <Route path="/home" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage />} />
 
         <Route
           path="/profile"
