@@ -35,11 +35,85 @@ import Games from './pages/DashBoard/Games';
 import Memory from './pages/Games/Memory';
 import MemoryGame from './pages/Games/MemoryMatch';
 
+import Reflex from './pages/Games/Reflex';
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
+        const [user, setUser] = useState(() => {
+        const savedUser = localStorage.getItem("user");
+        return savedUser ? JSON.parse(savedUser) : null;
+    });
+
+
+
+  const [authLoading, setAuthLoading] = useState(true); // ⏳ auth check in progress
   const location = useLocation();
+  const API = import.meta.env.VITE_API_BASE_URL;
+
+useEffect(() => {
+  const savedUser = localStorage.getItem("user");
+  if (savedUser && !user) {
+    setUser(JSON.parse(savedUser));
+  }
+}, []);
+
+
+    // 🔁 RESTORE USER ON PAGE REFRESH / HARD RELOAD
+ useEffect(() => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    setAuthLoading(false); // ❌ no token, stop loading
+    return;
+  }
+
+  // fetch("http://localhost:9000/api/auth/me", {
+  fetch(`${API}/api/users/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Invalid token");
+      return res.json();
+    })
+    // .then((data) => {
+    //   setUser(data);       // ✅ restore user
+    //   setAuthLoading(false);    // ✅ auth check complete
+    // })
+
+
+    .then((data) => {
+          setUser({
+            id: data._id,
+            name: data.fullName,
+            email: data.email,
+          });
+          setAuthLoading(false);
+        })
+
+//     .then((data) => {
+//   const normalizedUser = {
+//     id: data._id,
+//     name: data.fullName,
+//     email: data.email,
+//   };
+
+//   setUser(normalizedUser);
+//   localStorage.setItem("user", JSON.stringify(normalizedUser));
+//   setAuthLoading(false);
+// })
+
+
+    .catch(() => {
+      localStorage.removeItem("token");
+      setUser(null);
+      setAuthLoading(false);    // ❌ auth failed, stop loading
+    });
+}, []);
+
+
 
   // Close login on route change
   useEffect(() => {
@@ -55,7 +129,9 @@ function App() {
   const isDashboard = location.pathname.startsWith("/dashboard");
 
   // const isgamesPage = location.pathname.startsWith("/memory","/memorymatch");
-  const isgamesPage = location.pathname.startsWith("/memory") || location.pathname.startsWith("/memorymatch");
+  const isgamesPage = location.pathname.startsWith("/memory") || 
+                      location.pathname.startsWith("/memorymatch") || 
+                      location.pathname.startsWith("/reflex") ;
 
 
   return (
@@ -84,7 +160,7 @@ function App() {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/features" element={<Features />} />
         <Route path="/pricing" element={<Pricing />} />
-        <Route path="/home" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage />} />
 
         <Route
           path="/profile"
@@ -93,10 +169,11 @@ function App() {
 
         <Route path="memory" element={<Memory />} />
         <Route path="memorymatch" element={<MemoryGame user={user} />} />
+        <Route path="reflex" element={<Reflex/>} />
 
         {/* Dashboard with nested routes */}
         {/* <Route path="/dashboard" element={  <DashboardLayout user={user} />}> */}
-        <Route path="/dashboard" element={ <ProtectedRoute><DashboardLayout user={user} /></ProtectedRoute> }>
+        <Route path="/dashboard" element={ <ProtectedRoute user={user} authLoading={authLoading} ><DashboardLayout user={user} /></ProtectedRoute> }>
           <Route index element={<DashboardArena />} />
           <Route path="duel" element={<PlayDuel />} />
           <Route path="profile" element={<UserProfile />} />

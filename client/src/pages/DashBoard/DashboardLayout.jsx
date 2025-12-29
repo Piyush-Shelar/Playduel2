@@ -20,6 +20,8 @@ const navigate = useNavigate();
 
 const handleLogout = () => {
   localStorage.removeItem("token"); // 🔑 destroy access
+  localStorage.removeItem("user");
+
   // setUser(null);                    // clear app state
   navigate("/");                    // go home
 };
@@ -32,7 +34,7 @@ const handleLogout = () => {
       {/* ------------------- TOP NAVBAR ------------------- */}
       <div className="w-full h-16 flex items-center justify-between px-8 border-b border-white/10 bg-gradient-to-r from-[#040506] to-[#07090f] shadow-lg ">
         <h1 className="text-2xl font-bold tracking-wide cursor-pointer">
-          <span className="text-[#1f5cff]" onClick={()=>navigate("/")}>Skill</span>Duel
+          <span className="text-[#1f5cff]" onClick={()=>navigate("")}>Skill</span>Duel
         </h1>
 
         <div className="flex items-center gap-6">

@@ -167,4 +167,10 @@ app.get("/categories", async (req, res) => {
 
 
 app.listen(9000, () => console.log("Server running on 9000"));
+<<<<<<< HEAD
 app.listen(9000, () => console.log("Server is ready"));
+=======
+app.listen(9000, () => console.log("Server is ready"));
+
+
+>>>>>>> c7dbcbbb82466c4133db35ac6220a0244a4d9f91
