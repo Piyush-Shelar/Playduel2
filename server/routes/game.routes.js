@@ -43,24 +43,35 @@ router.get("/debug", async (req, res) => {
 
 /* ---------------- LEADERBOARD ROUTE ---------------- */
 router.get("/leaderboard", async (req, res) => {
-  const db = mongoose.connection.db;
+  try {
+    const leaderboard = await mongoose.connection.db
+      .collection("game_attempts")
+      .aggregate([
+        { $match: { game: "memory" } },
 
-  const leaderboard = await db.collection("game_attempts").aggregate([
-    { $match: { game: "memory" } },
+              {
+                  $group: {
+          _id: "$userId",
+          userName: {
+            $last: {
+              $ifNull: ["$userName", "Unknown"]
+            }
+          },
+          bestScore: { $max: "$score" }
+  }
+        },
 
-    {
-      $group: {
-        _id: "$userId",
-        name: { $first: "$userName" },
-        bestScore: { $max: "$score" }
-      }
-    },
+        { $sort: { bestScore: -1 } }
+      ])
+      .toArray();
 
-    { $sort: { bestScore: -1 } }
-  ]).toArray();
-
-  res.json(leaderboard);
+    res.json(leaderboard);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Leaderboard fetch failed" });
+  }
 });
+
 
 
 // router.get("/leaderboard", async (req, res) => {

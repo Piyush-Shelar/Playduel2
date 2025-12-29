@@ -22,11 +22,10 @@ import ContactUs from "./Components/ContactUs";
 import Features from "./Components/Features";
 import Pricing from "./Components/Pricing";
 import Friends from "./Components/Friends";
+import Memory from './pages/Games/Memory';
+import MemoryGame from './pages/Games/MemoryMatch';
+import Reflex from './pages/Games/Reflex';
 
-/* Games */
-import Memory from "./pages/Games/Memory";
-import MemoryGame from "./pages/Games/MemoryMatch";
-import Reflex from "./pages/Games/Reflex";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -145,10 +144,10 @@ function App() {
           }
         />
 
-        {/* GAMES */}
-        <Route path="/memory" element={<Memory />} />
-        <Route path="/memorymatch" element={<MemoryGame user={user} />} />
-        <Route path="/reflex" element={<Reflex />} />
+        <Route path="memory" element={<Memory />} />
+        <Route path="memorymatch" element={<MemoryGame user={user} />} />
+        <Route path="reflex" element={<Reflex/>} />
+
 
         {/* DASHBOARD */}
        <Route
