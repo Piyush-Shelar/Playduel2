@@ -17,13 +17,13 @@ export default function ArcadeGames() {
       xp: "+50 XP"
     },
     { 
-      id: "math", 
-      name: "Math Fiesta", 
-      desc: "Quick-fire arithmetic challenges.", 
-      long: "Solve increasingly complex arithmetic problems under time pressure to boost mental calculation speed.", 
-      skill: "Calculation", 
-      tags: ["Logic","Speed"], 
-      icon: "➗",
+      id: "reflex", 
+      name: "Reflex Fiesta", 
+      desc: "Quick-fire reflex challenges.", 
+      long: "Test your reaction time and precision by clicking targets as they appear.", 
+      skill: "Reflex", 
+      tags: ["Reaction","Speed"],
+      icon: "⚡",
       color: "from-[#ff6a00] to-[#ee0979]",
       xp: "+70 XP"
     },
@@ -66,9 +66,13 @@ export default function ArcadeGames() {
     if (game.id === "memory") {
       // Navigate to memory page
       navigate("/memory");
+    } 
+    else if (game.id === "reflex") {
+      navigate("/reflex");
     } else {
       alert(`Starting ${game.name}! (Page under development)`);
     }
+
   };
 
   return (
@@ -82,6 +86,8 @@ export default function ArcadeGames() {
           Challenge your brain with exciting cognitive games
         </p>
       </div>
+
+
 
       {/* Search Bar */}
       <div className="w-full max-w-2xl mb-10">

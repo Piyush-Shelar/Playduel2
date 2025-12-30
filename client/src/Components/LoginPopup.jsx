@@ -166,6 +166,8 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+const API = import.meta.env.VITE_API_BASE_URL;
+
 
 const LoginPopup = ({ setShowLogin, setUser }) => {
   const [mode, setMode] = useState("signin");
@@ -182,11 +184,17 @@ const LoginPopup = ({ setShowLogin, setUser }) => {
     try {
       if (mode === "signup") {
         // REGISTER API
-        const res = await axios.post("http://localhost:9000/register", {
+        // const res = await axios.post("http://localhost:9000/register", {
+        //   fullName,
+        //   email,
+        //   password
+        // });
+        const res = await axios.post(`${API}/api/users/register`, {
           fullName,
           email,
-          password
+          password,
         });
+
 
         setMsg(res.data.message);
         setMode("signin"); // switch to login after signup
@@ -194,18 +202,29 @@ const LoginPopup = ({ setShowLogin, setUser }) => {
       }
 
       // LOGIN API
-      const res = await axios.post("http://localhost:9000/login", {
+      // const res = await axios.post("http://localhost:9000/login", {
+      //   email,
+      //   password
+      // });
+
+      const res = await axios.post(`${API}/api/users/login`, {
         email,
-        password
+        password,
       });
+
 
       const { token, user } = res.data;
 
       // Store token
-      localStorage.setItem("token", token);
+      // localStorage.setItem("token", token);
 
-      // Set user in App state
+      // // Set user in App state
+      // setUser(user);
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user)); // ✅ ADD THIS
       setUser(user);
+
 
       setShowLogin(false);
       navigate("/dashboard");

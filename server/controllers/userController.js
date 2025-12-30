@@ -1,0 +1,98 @@
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import User from "../models/userModel.js";
+import generateToken from "../utils/generateToken.js";
+
+/* REGISTER */
+export const registerUser = async (req, res) => {
+  try {
+    const { fullName, email, password } = req.body;
+
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // auto-generate username
+    const username = email.split("@")[0];
+
+    const user = await User.create({
+      fullName,
+      email,
+      password: hashedPassword,
+      profile: {
+        username,
+        rank: "Bronze",
+        avatarIcon: "User"
+      },
+      stats: {
+        totalXP: 0,
+        level: 1,
+        currentStreak: 0
+      },
+      badges: []
+    });
+
+    res.status(201).json({
+      message: "Account created successfully",
+      token: generateToken(user._id),
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        profile: user.profile,
+        stats: user.stats
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Registration failed" });
+  }
+};
+
+
+/* LOGIN */
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    res.json({
+      token: generateToken(user._id),
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        profile: user.profile,
+        stats: user.stats,
+        badges: user.badges
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Login failed" });
+  }
+};
+
+
+/* GET CURRENT USER */
+export const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch user" });
+  }
+};
+
+
+
