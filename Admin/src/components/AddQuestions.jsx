@@ -1,321 +1,140 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
-export default function AddQuestions() {
-  const [categories, setCategories] = useState([]);
+const API = "http://localhost:4000";
 
-  /* ================= CATEGORY ================= */
+const difficulties = ["Easy", "Medium", "Hard"];
 
-  const addCategory = () => {
-    setCategories((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        name: "",
-        description: "",
-        timePerQuestion: 30,
-        questions: [],
-        isSaved: false,
-      },
-    ]);
-  };
+export default function AddCategory() {
+  const [catName, setCatName] = useState("");
+  const [catDesc, setCatDesc] = useState("");
+  const [timePerQuestion, setTimePerQuestion] = useState(30);
+  const [difficulty, setDifficulty] = useState("Easy");
 
-  const updateCategory = (id, field, value) => {
-    setCategories((prev) =>
-      prev.map((cat) =>
-        cat.id === id ? { ...cat, [field]: value } : cat
-      )
-    );
-  };
+  /* ================= ADD CATEGORY ================= */
+  const addCategory = async (e) => {
+    e.preventDefault();
 
-  const saveCategory = (id) => {
-    const category = categories.find((c) => c.id === id);
-
-    if (!category.name.trim()) {
-      alert("Category name is required");
-      return;
+    if (!catName.trim()) {
+      return toast.error("Category name is required");
     }
 
-    // API CALL WILL GO HERE LATER
-    console.log("CATEGORY SAVED:", category);
+    try {
+      await axios.post(`${API}/api/manage/category`, {
+        name: catName,
+        description: catDesc,
+        timePerQuestion,
+        difficulty,
+      });
 
-    setCategories((prev) =>
-      prev.map((cat) =>
-        cat.id === id ? { ...cat, isSaved: true } : cat
-      )
-    );
-  };
+      toast.success("Category created successfully");
 
-  const deleteCategory = (id) => {
-    setCategories((prev) => prev.filter((cat) => cat.id !== id));
-  };
-
-  /* ================= QUESTIONS ================= */
-
-  const addQuestion = (categoryId) => {
-    setCategories((prev) =>
-      prev.map((cat) =>
-        cat.id === categoryId
-          ? {
-              ...cat,
-              questions: [
-                ...cat.questions,
-                {
-                  id: Date.now(),
-                  question: "",
-                  difficulty: "Easy",
-                  options: ["", "", "", ""],
-                  correctAnswer: "",
-                },
-              ],
-            }
-          : cat
-      )
-    );
-  };
-
-  const updateQuestion = (catId, qId, field, value) => {
-    setCategories((prev) =>
-      prev.map((cat) =>
-        cat.id === catId
-          ? {
-              ...cat,
-              questions: cat.questions.map((q) =>
-                q.id === qId ? { ...q, [field]: value } : q
-              ),
-            }
-          : cat
-      )
-    );
-  };
-
-  const updateOption = (catId, qId, index, value) => {
-    setCategories((prev) =>
-      prev.map((cat) =>
-        cat.id === catId
-          ? {
-              ...cat,
-              questions: cat.questions.map((q) =>
-                q.id === qId
-                  ? {
-                      ...q,
-                      options: q.options.map((o, i) =>
-                        i === index ? value : o
-                      ),
-                    }
-                  : q
-              ),
-            }
-          : cat
-      )
-    );
-  };
-
-  const saveQuestion = (catId, qId) => {
-    const category = categories.find((c) => c.id === catId);
-    const question = category.questions.find((q) => q.id === qId);
-
-    if (!question.question.trim()) {
-      alert("Question text required");
-      return;
+      setCatName("");
+      setCatDesc("");
+      setTimePerQuestion(30);
+      setDifficulty("Easy");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Error");
     }
-
-    if (question.correctAnswer === "") {
-      alert("Select correct answer");
-      return;
-    }
-
-    // API CALL WILL GO HERE
-    console.log("QUESTION SAVED:", {
-      categoryId: catId,
-      timePerQuestion: category.timePerQuestion,
-      ...question,
-    });
-
-    alert("Question saved ✔");
   };
-
-  /* ================= UI ================= */
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-8 text-white">
-      <h1 className="text-3xl font-bold">Add Quiz Questions</h1>
+    <div className="min-h-screen bg-[#020617] flex items-center justify-center px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="w-full max-w-xl bg-[#020617] border border-white/10 rounded-3xl p-8 space-y-8 shadow-2xl"
+      >
+        {/* HEADER */}
+        <div>
+          <h1 className="text-3xl font-bold text-white">
+            Create Category
+          </h1>
+          <p className="text-white/50 text-sm mt-1">
+            Configure quiz rules before adding questions
+          </p>
+        </div>
 
-      {categories.map((cat) => (
-        <div
-          key={cat.id}
-          className="bg-[#0b1224] border border-white/10 rounded-2xl p-6 space-y-4"
-        >
-          {/* CATEGORY INPUTS */}
-          <div className="grid md:grid-cols-3 gap-4">
-            <input
-              placeholder="Category Name"
-              value={cat.name}
-              disabled={cat.isSaved}
-              onChange={(e) =>
-                updateCategory(cat.id, "name", e.target.value)
-              }
-              className="bg-white/5 px-4 py-2 rounded-lg"
-            />
-
-            <input
-              type="number"
-              min={5}
-              disabled={cat.isSaved}
-              placeholder="Time per question (sec)"
-              value={cat.timePerQuestion}
-              onChange={(e) =>
-                updateCategory(
-                  cat.id,
-                  "timePerQuestion",
-                  Number(e.target.value)
-                )
-              }
-              className="bg-white/5 px-4 py-2 rounded-lg"
-            />
-
-            <button
-              onClick={() => deleteCategory(cat.id)}
-              className="text-red-400 text-sm"
-            >
-              Delete Category
-            </button>
-          </div>
-
-          <textarea
-            disabled={cat.isSaved}
-            placeholder="Category description"
-            value={cat.description}
-            onChange={(e) =>
-              updateCategory(cat.id, "description", e.target.value)
-            }
-            className="w-full bg-white/5 px-4 py-2 rounded-lg"
+        {/* FORM */}
+        <form onSubmit={addCategory} className="space-y-6">
+          {/* CATEGORY NAME */}
+          <motion.input
+            whileFocus={{ scale: 1.02 }}
+            value={catName}
+            onChange={(e) => setCatName(e.target.value)}
+            placeholder="Category name"
+            className="input"
           />
 
-          {/* SAVE CATEGORY */}
-          {!cat.isSaved && (
-            <button
-              onClick={() => saveCategory(cat.id)}
-              className="w-full bg-green-500 text-black py-2 rounded-lg font-semibold"
-            >
-              Save Category
-            </button>
-          )}
+          {/* DESCRIPTION */}
+          <motion.textarea
+            whileFocus={{ scale: 1.02 }}
+            value={catDesc}
+            onChange={(e) => setCatDesc(e.target.value)}
+            placeholder="Short description"
+            className="input h-24 resize-none"
+          />
 
-          {/* QUESTIONS */}
-          {cat.isSaved && (
-            <>
-              {cat.questions.map((q, i) => (
-                <div
-                  key={q.id}
-                  className="bg-black/40 border border-white/10 rounded-xl p-5 space-y-3"
+          {/* TIME */}
+          <motion.input
+            whileFocus={{ scale: 1.02 }}
+            type="number"
+            value={timePerQuestion}
+            onChange={(e) => setTimePerQuestion(e.target.value)}
+            placeholder="Time per question (seconds)"
+            className="input"
+          />
+
+          {/* DIFFICULTY SELECTOR */}
+          <div>
+            <p className="text-sm text-white/60 mb-2">Difficulty</p>
+
+            <div className="flex gap-3">
+              {difficulties.map((level) => (
+                <motion.button
+                  type="button"
+                  key={level}
+                  onClick={() => setDifficulty(level)}
+                  whileTap={{ scale: 0.95 }}
+                  animate={{
+                    backgroundColor:
+                      difficulty === level
+                        ? level === "Easy"
+                          ? "rgba(34,197,94,0.2)"
+                          : level === "Medium"
+                          ? "rgba(234,179,8,0.2)"
+                          : "rgba(239,68,68,0.2)"
+                        : "rgba(255,255,255,0.05)",
+                  }}
+                  className={`flex-1 py-2 rounded-xl font-semibold transition-all ${
+                    difficulty === level
+                      ? level === "Easy"
+                        ? "text-green-400"
+                        : level === "Medium"
+                        ? "text-yellow-400"
+                        : "text-red-400"
+                      : "text-white/60 hover:bg-white/10"
+                  }`}
                 >
-                  <h3 className="font-semibold">Question {i + 1}</h3>
-
-                  <input
-                    placeholder="Enter question"
-                    value={q.question}
-                    onChange={(e) =>
-                      updateQuestion(
-                        cat.id,
-                        q.id,
-                        "question",
-                        e.target.value
-                      )
-                    }
-                    className="w-full bg-white/5 px-3 py-2 rounded"
-                  />
-
-                  <div className="grid md:grid-cols-2 gap-2">
-                    {q.options.map((opt, idx) => (
-                      <input
-                        key={idx}
-                        placeholder={`Option ${idx + 1}`}
-                        value={opt}
-                        onChange={(e) =>
-                          updateOption(
-                            cat.id,
-                            q.id,
-                            idx,
-                            e.target.value
-                          )
-                        }
-                        className="bg-white/5 px-3 py-2 rounded"
-                      />
-                    ))}
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <select
-                      value={q.correctAnswer}
-                      onChange={(e) =>
-                        updateQuestion(
-                          cat.id,
-                          q.id,
-                          "correctAnswer",
-                          Number(e.target.value)
-                        )
-                      }
-                      className="bg-white/5 px-4 py-2 rounded"
-                    >
-                      <option value="">Correct Answer</option>
-                      {q.options.map((_, idx) => (
-                        <option
-                          key={idx}
-                          value={idx}
-                          className="bg-[#0b1224]"
-                        >
-                          Option {idx + 1}
-                        </option>
-                      ))}
-                    </select>
-
-                    <select
-                      value={q.difficulty}
-                      onChange={(e) =>
-                        updateQuestion(
-                          cat.id,
-                          q.id,
-                          "difficulty",
-                          e.target.value
-                        )
-                      }
-                      className="bg-white/5 px-4 py-2 rounded"
-                    >
-                      <option className="bg-[#0b1224]">Easy</option>
-                      <option className="bg-[#0b1224]">Medium</option>
-                      <option className="bg-[#0b1224]">Hard</option>
-                    </select>
-                  </div>
-
-                  {/* SAVE QUESTION BUTTON */}
-                  <button
-                    onClick={() => saveQuestion(cat.id, q.id)}
-                    className="w-full bg-[#1f5cff] text-black py-2 rounded-lg font-semibold"
-                  >
-                    Save Question
-                  </button>
-                </div>
+                  {level}
+                </motion.button>
               ))}
+            </div>
+          </div>
 
-              {/* ADD QUESTION */}
-              <button
-                onClick={() => addQuestion(cat.id)}
-                className="px-6 py-2 bg-[#1f5cff] text-black rounded-lg font-semibold"
-              >
-                + Add Question
-              </button>
-            </>
-          )}
-        </div>
-      ))}
-
-      {/* ADD CATEGORY */}
-      <button
-        onClick={addCategory}
-        className="px-6 py-3 bg-white/10 rounded-xl"
-      >
-        + Add Category
-      </button>
+          {/* SUBMIT */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            className="btn btn-primary w-full mt-4"
+          >
+            Create Category
+          </motion.button>
+        </form>
+      </motion.div>
     </div>
   );
 }
