@@ -41,8 +41,19 @@ export default function CategoryManagement() {
 
   /* ================= ACTIONS ================= */
 
-  const deleteCategory = (catId) => {
-    setCategories((prev) => prev.filter((c) => c._id !== catId));
+  const deleteCategory = async(catId) => {
+ 
+    try {
+
+      const res = await axios.delete(`${API}/api/manage/del-category/${catId}`)
+      if (res.data.success) {
+        toast.success(res.data.message)
+      }
+         setCategories((prev) => prev.filter((c) => c._id !== catId));
+
+    } catch (error) {
+      toast.error(error.messge)
+    }
 
     if (activeCategory?._id === catId) {
       setActiveCategory(null);

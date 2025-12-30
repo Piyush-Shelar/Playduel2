@@ -35,6 +35,7 @@ export const getCategories = async (req, res) => {
   try {
     const categories = await categoryModel.find().sort({ createdAt: -1 });
 
+
     res.json({
       success: true,
       data: categories,
@@ -51,9 +52,9 @@ export const getCategories = async (req, res) => {
 /* ================= DELETE CATEGORY (CASCADE) ================= */
 export const deleteCategory = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    await questionModel.deleteMany({ category: id });
+    
+ const{id} = req.params;
+    await questionModel.deleteMany({ category:id });
     await categoryModel.findByIdAndDelete(id);
 
     res.json({
