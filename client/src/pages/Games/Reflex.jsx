@@ -404,7 +404,7 @@ export default function ReflexGamePage() {
         },
         body: JSON.stringify({
           userId,
-          userName: currentUser.name,
+          userName: currentUser.fullName,
           game: "reflex",
           score: finalScore,
         }),
@@ -426,7 +426,7 @@ export default function ReflexGamePage() {
 
       const formatted = data.map((item, index) => ({
         rank: index + 1,
-        name: item.name || item.userId,
+        name: item.userName || item.userId || item.fullName || item.name,
         score: item.bestScore,
         isYou: item.userId === "test-user-frontend"
       }));

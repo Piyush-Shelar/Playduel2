@@ -95,7 +95,7 @@ function App() {
   const isDashboard = location.pathname.startsWith("/dashboard");
 
   // const isgamesPage = location.pathname.startsWith("/memory","/memorymatch");
-  const isgamesPage = location.pathname.startsWith("/memory") || 
+  const isGamePage = location.pathname.startsWith("/memory") || 
                       location.pathname.startsWith("/memorymatch") || 
                       location.pathname.startsWith("/reflex") || 
                       location.pathname.startsWith("/lazer") ;
