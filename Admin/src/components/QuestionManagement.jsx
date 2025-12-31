@@ -1,103 +1,199 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { FaClock, FaBolt } from "react-icons/fa";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaTrash,
+  FaCheckCircle,
+  FaTag,
+  FaSearch,
+  FaClock,
+  FaSignal,
+} from "react-icons/fa";
+import axios from "axios"
+import { useEffect } from "react";
+import dayjs from "dayjs"
+import { toast } from "react-toastify";
 
-export default function QuestionManagement() {
-  const [categories, setCategories] = useState([
-    {
-      id: 1,
-      name: "AI & ML",
-      description: "Basics of Artificial Intelligence & Machine Learning",
-      questions: [
-        { id: 101, difficulty: "Easy", timeLimit: 20 },
-        { id: 102, difficulty: "Medium", timeLimit: 30 },
-      ],
-    },
-    {
-      id: 2,
-      name: "Web Development",
-      description: "Frontend & Backend fundamentals",
-      questions: [
-        { id: 201, difficulty: "Easy", timeLimit: 15 },
-      ],
-    },
-  ]);
 
-  const deleteCategory = (catId) => {
-    setCategories(categories.filter((c) => c.id !== catId));
-  };
 
-  const editCategory = (catId) => {
-    alert("Edit functionality for category " + catId);
-  };
 
-  const totalDuration = (questions) =>
-    questions.reduce((sum, q) => sum + q.timeLimit, 0);
+/* ================= COMPONENT ================= */
 
-  const averageDifficulty = (questions) => {
-    if (questions.length === 0) return "N/A";
-    const levels = { Easy: 1, Medium: 2, Hard: 3 };
-    const avg = Math.round(
-      questions.reduce((sum, q) => sum + levels[q.difficulty], 0) / questions.length
+export default function QuestionManagement({API}) {
+  const [questions, setQuestions] = useState([]);
+  const [search, setSearch] = useState("");
+
+  const filtered = questions.filter((q) => {
+    const t = search.toLowerCase();
+    return (
+      q.question.toLowerCase().includes(t) ||
+      q.category.name.toLowerCase().includes(t) ||
+      q.options.some((o) => o.toLowerCase().includes(t)) ||
+      q.category.difficulty.toLowerCase().includes(t)
     );
-    return Object.keys(levels).find((key) => levels[key] === avg) || "Medium";
+  });
+
+const displayQuestion = async () => {
+  try {
+    const res = await axios.get(`${API}/api/manage/get-all-quest`)
+    if (res.data.success) {
+      setQuestions(res.data.data)
+    }
+  } catch (error) {
+        toast.error(error.response?.data?.message || "Error");
+  }
+}
+
+
+  const deleteQuestion = async (id,cat_id) => {
+
+const response = await axios.delete(`${API}/api/manage/question/${id}`,{data:{cat_id}})
+if (response.data.success) {
+  toast.success(response.data.message)
+   setQuestions((prev) => prev.filter((q) => q._id !== id));
+}
+
+   
+    try {
+      
+    } catch (error) {
+          toast.error(error.response?.data?.message || "Error");
+    }
   };
 
-  const difficultyColor = (level) => {
-    if (level === "Easy") return "bg-green-500/20 text-green-400";
-    if (level === "Medium") return "bg-yellow-500/20 text-yellow-400";
-    if (level === "Hard") return "bg-red-500/20 text-red-400";
-    return "bg-white/20 text-white";
-  };
+useEffect(()=>{
+displayQuestion()
+},[])
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {categories.map((cat) => (
-        <motion.div
-          key={cat.id}
-          whileHover={{ scale: 1.03 }}
-          className="relative bg-gradient-to-tl from-[#1f1f2e]/70 to-[#0d1528]/80 backdrop-blur-lg border border-white/10 rounded-3xl p-6 shadow-xl flex flex-col justify-between transition-transform duration-300"
+    <div className="min-h-screen bg-[#020617] text-white px-6 py-10">
+      {/* HEADER */}
+      <div className="mb-10 flex flex-col gap-2">
+        <h1 className="text-3xl font-bold tracking-tight">
+          Question Management
+        </h1>
+        <p className="text-white/50 text-sm">
+          Manage, search and delete questions across categories
+        </p>
+      </div>
+
+      {/* SEARCH */}
+      <div className="mb-12 max-w-xl relative">
+        <FaSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search questions, categories, difficulty or options…"
+          className="w-full pl-12 pr-4 py-4 rounded-2xl
+                     bg-[#0b1224]/80 backdrop-blur-md
+                     border border-white/10
+                     text-white outline-none
+                     focus:border-indigo-500/40
+                     shadow-lg transition"
+        />
+      </div>
+
+      {/* GRID */}
+      <motion.div
+        layout
+        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
+      >
+        <AnimatePresence>
+          {filtered.map((q) => (
+            <motion.div
+              key={q._id}
+              layout
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              whileHover={{ y: -6 }}
+              className="relative rounded-3xl p-6
+                         bg-gradient-to-br from-[#0d1528]/90 to-[#1f1f2e]/90
+                         border border-white/10
+                         shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)]
+                         backdrop-blur-xl"
+            >
+              {/* TOP BAR */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex gap-2 flex-wrap">
+                  <span
+                    title={q.category.name}
+                    className="flex items-center gap-2 px-3 py-1 text-xs
+                                   bg-blue-500/20 text-blue-400 rounded-full
+                                   max-w-[120px] md:max-w-none
+                                   truncate md:whitespace-normal"
+                  >
+                    <FaTag className="shrink-0" /> {q.category.name}
+                  </span>
+
+                  <span className="flex items-center gap-2 px-3 py-1 text-xs
+                                   bg-purple-500/20 text-purple-400 rounded-full">
+                    <FaSignal /> {q.category.difficulty}
+                  </span>
+
+                  <span className="flex items-center gap-2 px-3 py-1 text-xs
+                                   bg-emerald-500/20 text-emerald-400 rounded-full">
+                    <FaClock /> {q.category.timePerQuestion}s
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => deleteQuestion(q._id,q.category._id)}
+                  className="p-2 rounded-xl
+                             bg-red-500/10 hover:bg-red-500/20
+                             text-red-400 transition"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+
+              {/* QUESTION */}
+              <h2 className="text-lg font-semibold leading-snug mb-6">
+                {q.question}
+              </h2>
+
+              {/* OPTIONS */}
+              <div className="space-y-2 mb-6">
+                {q.options.map((opt, i) => {
+                  const isCorrect = q.correctAnswer === i;
+                  return (
+                    <div
+                      key={i}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm
+                        ${
+                          isCorrect
+                            ? "bg-green-500/20 text-green-300 border border-green-500/30"
+                            : "bg-[#0b1224]/80 border border-white/10 text-white/80"
+                        }`}
+                    >
+                      {isCorrect && (
+                        <FaCheckCircle className="text-green-400 shrink-0" />
+                      )}
+                      {opt}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* FOOTER META */}
+              <div className="flex justify-between items-center text-xs text-white/40">
+                
+                <span>{dayjs(q.createdAt).format("DD/MM/YYYY HH:mm:ss")}</span>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* EMPTY */}
+      {filtered.length === 0 && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center text-white/40 mt-24"
         >
-          <div>
-            <h2 className="text-2xl font-bold text-white mb-2">{cat.name}</h2>
-            <p className="text-white/70 mb-4">{cat.description}</p>
-
-            <div className="flex flex-wrap gap-3">
-              <div className="flex items-center gap-2 px-3 py-1 bg-blue-500/20 rounded-full text-blue-400 text-sm font-medium">
-                <FaClock /> {totalDuration(cat.questions)} sec
-              </div>
-              <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${difficultyColor(averageDifficulty(cat.questions))}`}>
-                <FaBolt /> {averageDifficulty(cat.questions)}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 flex gap-3">
-            <button
-              onClick={() => editCategory(cat.id)}
-              className="flex-1 px-4 py-2 bg-white/10 rounded-xl hover:bg-white/20 transition text-white font-semibold"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => deleteCategory(cat.id)}
-              className="flex-1 px-4 py-2 bg-red-500/20 rounded-xl hover:bg-red-500/30 transition text-red-400 font-semibold"
-            >
-              Delete
-            </button>
-          </div>
-
-          {/* Optional floating badge */}
-          <div className="absolute top-4 right-4 px-2 py-1 bg-gradient-to-r from-[#1f5cff] to-[#00bcd4] text-black font-bold text-xs rounded-full shadow-lg">
-            Category
-          </div>
-        </motion.div>
-      ))}
-
-      {categories.length === 0 && (
-        <div className="col-span-full text-center text-white/50 py-20 text-xl">
-          No categories available
-        </div>
+          No matching questions found
+        </motion.p>
       )}
     </div>
   );

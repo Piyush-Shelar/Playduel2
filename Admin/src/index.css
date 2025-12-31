@@ -1,1 +1,18 @@
 @import "tailwindcss";
+.input {
+  @apply w-full rounded-lg bg-[#111827] border border-white/10 px-4 py-2
+         text-sm text-white placeholder-white/40
+         focus:outline-none focus:ring-2 focus:ring-indigo-500;
+}
+
+.btn {
+  @apply rounded-lg px-5 py-2 text-sm font-medium transition;
+}
+
+.btn-primary {
+  @apply bg-indigo-500 hover:bg-indigo-400 text-black;
+}
+
+.btn-danger {
+  @apply text-red-400 hover:text-red-300;
+}
