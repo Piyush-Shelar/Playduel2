@@ -515,7 +515,11 @@ export default function MemoryGamePage() {
 
 const fetchLeaderboard = async () => {
   try {
-    const res = await fetch("http://localhost:4080/api/game/leaderboard");
+    // const res = await fetch("http://localhost:4080/api/game/leaderboard");
+    const res = await fetch(
+        "http://localhost:4080/api/game/leaderboard?game=memory"
+    );
+
     const data = await res.json();
     console.log(data)
 

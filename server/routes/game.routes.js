@@ -42,38 +42,59 @@ router.get("/debug", async (req, res) => {
 });
 
 /* ---------------- LEADERBOARD ROUTE ---------------- */
+
 router.get("/leaderboard", async (req, res) => {
   try {
-    const leaderboard = await mongoose.connection.db
-      .collection("game_attempts")
-      .aggregate([
-        { $match: { game: "memory" } },
+    const { game } = req.query;   // ✅ get game from query
 
-              {
-                  $group: {
+    if (!game) {
+      return res.status(400).json({ message: "Game type required" });
+    }
+
+    const db = mongoose.connection.db;
+
+    const leaderboard = await db.collection("game_attempts").aggregate([
+      { $match: { game } },       // ✅ dynamic now
+      {
+        $group: {
           _id: "$userId",
-          userName: {
-            $last: {
-              $ifNull: ["$userName", "Unknown"]
-            }
-          },
+          name: { $first: "$userName" },
           bestScore: { $max: "$score" }
-  }
-        },
-
-        { $sort: { bestScore: -1 } }
-      ])
-      .toArray();
+        }
+      },
+      { $sort: { bestScore: -1 } }
+    ]).toArray();
 
     res.json(leaderboard);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Leaderboard fetch failed" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Leaderboard error" });
   }
 });
 
 
 
+// router.get("/leaderboard", async (req, res) => {
+//   const db = mongoose.connection.db;
+
+//   const leaderboard = await db.collection("game_attempts").aggregate([
+//     { $match: { game: "memory" } },
+
+//     {
+//       $group: {
+//         _id: "$userId",
+//         name: { $first: "$userName" },
+//         bestScore: { $max: "$score" }
+//       }
+//     },
+
+//     { $sort: { bestScore: -1 } }
+//   ]).toArray();
+
+//   res.json(leaderboard);
+// });
+
+//======================================================================
 // router.get("/leaderboard", async (req, res) => {
 //   try {
 //     const db = mongoose.connection.db;
