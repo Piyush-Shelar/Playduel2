@@ -3,11 +3,11 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 
-const API = "http://localhost:4000";
+
 
 const difficulties = ["Easy", "Medium", "Hard"];
 
-export default function AddCategory() {
+export default function AddCategory({API}) {
   const [catName, setCatName] = useState("");
   const [catDesc, setCatDesc] = useState("");
   const [timePerQuestion, setTimePerQuestion] = useState(30);

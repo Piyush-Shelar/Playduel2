@@ -52,12 +52,36 @@ await categoryModel.findByIdAndUpdate(categoryId,{$inc:{questionCount:1}})
   }
 };
 
-
-export const countQuestionPerCategory = async (req,res) => {
+export const getQuestions = async (req,res) => {
   try {
-    const count = await questionModel.fin
+    const question= await questionModel.find().populate("category","name difficulty timePerQuestion");
+        res.status(201).json({
+      success: true,
+      data: question,
+    });
   } catch (error) {
-    
+     console.error(error.message);
+    res.status(500).json({
+      success: false,
+      message: "Error",
+    });
+  }
+}
+
+
+export const deleteQuestion = async (req,res) => {
+  try {
+    const{id} = req.params;
+    await questionModel.findByIdAndDelete(id);
+    await categoryModel.findByIdAndUpdate(req.body.cat_id,{$inc:{questionCount:-1}})
+    res.json({success:true,message:"Question deleted Successfully"})
+
+  } catch (error) {
+     console.error(error.message);
+    res.status(500).json({
+      success: false,
+      message: "Error to delete",
+    });
   }
 }
 

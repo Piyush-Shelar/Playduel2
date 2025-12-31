@@ -1,62 +1,68 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaTrash,
   FaCheckCircle,
   FaTag,
   FaSearch,
+  FaClock,
+  FaSignal,
 } from "react-icons/fa";
+import axios from "axios"
+import { useEffect } from "react";
+import dayjs from "dayjs"
+import { toast } from "react-toastify";
 
-/* ================= MOCK DATA ================= */
 
-const initialQuestions = [
-  {
-    _id: "q1",
-    category: "64fb1a9e12a1a1a1a1a1a1a1",
-    categoryName: "JavaScript",
-    question: "Which keyword is used to declare a variable?",
-    options: ["var", "loop", "const", "int"],
-    correctAnswer: 0,
-    createdAt: "2024-01-01",
-  },
-  {
-    _id: "q2",
-    category: "64fb1a9e12b2b2b2b2b2b2b2",
-    categoryName: "React",
-    question: "Which hook is used for side effects?",
-    options: ["useState", "useEffect", "useMemo", "useRef"],
-    correctAnswer: 1,
-    createdAt: "2024-01-02",
-  },
-  {
-    _id: "q3",
-    category: "64fb1a9e12c3c3c3c3c3c3c3",
-    categoryName: "MongoDB",
-    question: "Which operator is used for aggregation?",
-    options: ["$sum", "$group", "$match", "All of these"],
-    correctAnswer: 3,
-    createdAt: "2024-01-03",
-  },
-];
+
 
 /* ================= COMPONENT ================= */
 
-export default function QuestionManagement() {
-  const [questions, setQuestions] = useState(initialQuestions);
+export default function QuestionManagement({API}) {
+  const [questions, setQuestions] = useState([]);
   const [search, setSearch] = useState("");
 
   const filtered = questions.filter((q) => {
     const t = search.toLowerCase();
     return (
       q.question.toLowerCase().includes(t) ||
-      q.categoryName.toLowerCase().includes(t) ||
-      q.options.some((o) => o.toLowerCase().includes(t))
+      q.category.name.toLowerCase().includes(t) ||
+      q.options.some((o) => o.toLowerCase().includes(t)) ||
+      q.category.difficulty.toLowerCase().includes(t)
     );
   });
 
-  const deleteQuestion = (id) => {
-    setQuestions((prev) => prev.filter((q) => q._id !== id));
+const displayQuestion = async () => {
+  try {
+    const res = await axios.get(`${API}/api/manage/get-all-quest`)
+    if (res.data.success) {
+      setQuestions(res.data.data)
+    }
+  } catch (error) {
+        toast.error(error.response?.data?.message || "Error");
+  }
+}
+
+
+  const deleteQuestion = async (id,cat_id) => {
+
+const response = await axios.delete(`${API}/api/manage/question/${id}`,{data:{cat_id}})
+if (response.data.success) {
+  toast.success(response.data.message)
+   setQuestions((prev) => prev.filter((q) => q._id !== id));
+}
+
+   
+    try {
+      
+    } catch (error) {
+          toast.error(error.response?.data?.message || "Error");
+    }
   };
+
+useEffect(()=>{
+displayQuestion()
+},[])
 
   return (
     <div className="min-h-screen bg-[#020617] text-white px-6 py-10">
@@ -76,7 +82,7 @@ export default function QuestionManagement() {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search questions, categories or options…"
+          placeholder="Search questions, categories, difficulty or options…"
           className="w-full pl-12 pr-4 py-4 rounded-2xl
                      bg-[#0b1224]/80 backdrop-blur-md
                      border border-white/10
@@ -109,13 +115,30 @@ export default function QuestionManagement() {
             >
               {/* TOP BAR */}
               <div className="flex items-center justify-between mb-4">
-                <span className="flex items-center gap-2 px-3 py-1 text-xs
-                                 bg-blue-500/20 text-blue-400 rounded-full">
-                  <FaTag /> {q.categoryName}
-                </span>
+                <div className="flex gap-2 flex-wrap">
+                  <span
+                    title={q.category.name}
+                    className="flex items-center gap-2 px-3 py-1 text-xs
+                                   bg-blue-500/20 text-blue-400 rounded-full
+                                   max-w-[120px] md:max-w-none
+                                   truncate md:whitespace-normal"
+                  >
+                    <FaTag className="shrink-0" /> {q.category.name}
+                  </span>
+
+                  <span className="flex items-center gap-2 px-3 py-1 text-xs
+                                   bg-purple-500/20 text-purple-400 rounded-full">
+                    <FaSignal /> {q.category.difficulty}
+                  </span>
+
+                  <span className="flex items-center gap-2 px-3 py-1 text-xs
+                                   bg-emerald-500/20 text-emerald-400 rounded-full">
+                    <FaClock /> {q.category.timePerQuestion}s
+                  </span>
+                </div>
 
                 <button
-                  onClick={() => deleteQuestion(q._id)}
+                  onClick={() => deleteQuestion(q._id,q.category._id)}
                   className="p-2 rounded-xl
                              bg-red-500/10 hover:bg-red-500/20
                              text-red-400 transition"
@@ -154,8 +177,8 @@ export default function QuestionManagement() {
 
               {/* FOOTER META */}
               <div className="flex justify-between items-center text-xs text-white/40">
-                <span>ID: {q._id}</span>
-                <span>{q.createdAt}</span>
+                
+                <span>{dayjs(q.createdAt).format("DD/MM/YYYY HH:mm:ss")}</span>
               </div>
             </motion.div>
           ))}

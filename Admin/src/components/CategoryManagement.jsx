@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaClock, FaBolt, FaListUl } from "react-icons/fa";
 import axios from "axios";
 import { toast } from "react-toastify";
-const API = "http://localhost:4000";
-export default function CategoryManagement() {
+
+export default function CategoryManagement({API}) {
   
 
   const [categories, setCategories] = useState([]);
@@ -221,7 +221,7 @@ function QuestionForm({ onAdd,categoryId }) {
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState(["", "", "", ""]);
   const [correct, setCorrect] = useState(0);
-
+const API = "http://localhost:4000"
   const addQuestion = async() => {
     if (!question || options.some((o) => !o)) return;
 else{
@@ -258,7 +258,7 @@ else{
   return (
     <div className="space-y-4">
       <input
-        value={question}
+        value={question}required
         onChange={(e) => setQuestion(e.target.value)}
         placeholder="Question"
         className="w-full rounded-lg bg-[#111827] border border-white/10
@@ -267,7 +267,7 @@ else{
 
       {options.map((opt, i) => (
         <input
-          key={i}
+          key={i}required
           value={opt}
           onChange={(e) => {
             const copy = [...options];
