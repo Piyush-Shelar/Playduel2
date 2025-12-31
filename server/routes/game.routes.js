@@ -42,27 +42,59 @@ router.get("/debug", async (req, res) => {
 });
 
 /* ---------------- LEADERBOARD ROUTE ---------------- */
+
 router.get("/leaderboard", async (req, res) => {
-  const db = mongoose.connection.db;
+  try {
+    const { game } = req.query;   // ✅ get game from query
 
-  const leaderboard = await db.collection("game_attempts").aggregate([
-    { $match: { game: "memory" } },
+    if (!game) {
+      return res.status(400).json({ message: "Game type required" });
+    }
 
-    {
-      $group: {
-        _id: "$userId",
-        name: { $first: "$userName" },
-        bestScore: { $max: "$score" }
-      }
-    },
+    const db = mongoose.connection.db;
 
-    { $sort: { bestScore: -1 } }
-  ]).toArray();
+    const leaderboard = await db.collection("game_attempts").aggregate([
+      { $match: { game } },       // ✅ dynamic now
+      {
+        $group: {
+          _id: "$userId",
+          name: { $first: "$userName" },
+          bestScore: { $max: "$score" }
+        }
+      },
+      { $sort: { bestScore: -1 } }
+    ]).toArray();
 
-  res.json(leaderboard);
+    res.json(leaderboard);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Leaderboard error" });
+  }
 });
 
 
+
+// router.get("/leaderboard", async (req, res) => {
+//   const db = mongoose.connection.db;
+
+//   const leaderboard = await db.collection("game_attempts").aggregate([
+//     { $match: { game: "memory" } },
+
+//     {
+//       $group: {
+//         _id: "$userId",
+//         name: { $first: "$userName" },
+//         bestScore: { $max: "$score" }
+//       }
+//     },
+
+//     { $sort: { bestScore: -1 } }
+//   ]).toArray();
+
+//   res.json(leaderboard);
+// });
+
+//======================================================================
 // router.get("/leaderboard", async (req, res) => {
 //   try {
 //     const db = mongoose.connection.db;

@@ -7,7 +7,7 @@ export default function ArcadeGames() {
   const games = [
     { 
       id: "memory", 
-      name: "Memory Fiesta", 
+      name: "Memory ", 
       desc: "Recreate patterns under time pressure.", 
       long: "Improve working memory and visual recall by observing patterns and recreating them accurately as difficulty increases.", 
       skill: "Memory", 
@@ -18,7 +18,7 @@ export default function ArcadeGames() {
     },
     { 
       id: "reflex", 
-      name: "Reflex Fiesta", 
+      name: "Reflex ", 
       desc: "Quick-fire reflex challenges.", 
       long: "Test your reaction time and precision by clicking targets as they appear.", 
       skill: "Reflex", 
@@ -28,8 +28,8 @@ export default function ArcadeGames() {
       xp: "+70 XP"
     },
     { 
-      id: "train", 
-      name: "Train Fiesta", 
+      id: "lazer", 
+      name: "Train ", 
       desc: "Attention & reaction control game.", 
       long: "Guide trains by switching tracks at the correct time, sharpening focus and response accuracy.", 
       skill: "Attention", 
@@ -69,7 +69,11 @@ export default function ArcadeGames() {
     } 
     else if (game.id === "reflex") {
       navigate("/reflex");
-    } else {
+    }
+    else if (game.id === "lazer") {
+      navigate("/lazer");
+    }
+    else {
       alert(`Starting ${game.name}! (Page under development)`);
     }
 
