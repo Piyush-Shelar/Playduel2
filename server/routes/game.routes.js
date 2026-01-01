@@ -58,7 +58,7 @@ router.get("/leaderboard", async (req, res) => {
       {
         $group: {
           _id: "$userId",
-          name: { $first: "$userName" },
+          name: { $first: "$userName" }|| {$first: "$name"} ,
           bestScore: { $max: "$score" }
         }
       },
@@ -71,6 +71,55 @@ router.get("/leaderboard", async (req, res) => {
     res.status(500).json({ message: "Leaderboard error" });
   }
 });
+
+// router.get("/leaderboard", async (req, res) => {
+//   try {
+//     const { game } = req.query;
+//     const db = mongoose.connection.db;
+
+//     const leaderboard = await db.collection("game_attempts").aggregate([
+//       { $match: { game } },
+
+//       {
+//         $group: {
+//           _id: "$userId",
+//           bestScore: { $max: "$score" }
+          
+//         }
+//       },
+
+//       {
+//         $lookup: {
+//           from: "users",              // 👈 skillduels.users
+//           localField: "_id",           // userId
+//           foreignField: "_id",         // users._id
+//           as: "user"
+          
+//         }
+//       },
+
+//       { $unwind: "$user" },
+
+//       {
+//         $project: {
+//           _id: 0,
+//           userId: "$_id",
+//           bestScore: 1,
+//           userName: "$user.fullName" || "$user.userName"  // ✅ REAL NAME
+//         }
+//       },
+
+//       { $sort: { bestScore: -1 } },
+//       { $limit: 10 }
+//     ]).toArray();
+
+//     res.json(leaderboard);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Leaderboard error" });
+//   }
+// });
+
 
 
 
