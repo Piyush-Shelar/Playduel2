@@ -29,7 +29,7 @@ export default function ArcadeGames() {
     },
     { 
       id: "lazer", 
-      name: "Train ", 
+      name: "Lazer", 
       desc: "Attention & reaction control game.", 
       long: "Guide trains by switching tracks at the correct time, sharpening focus and response accuracy.", 
       skill: "Attention", 
