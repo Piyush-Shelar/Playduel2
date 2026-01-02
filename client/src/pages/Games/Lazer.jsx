@@ -757,7 +757,7 @@ export default function LaserGamePage() {
           {/* Game Header */}
           <div className="text-center mb-8">
             <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 bg-white rounded-2xl flex items-center justify-center text-3xl md:text-4xl text-emerald-700 font-bold">
-              ⚡
+              🏃‍♂️
             </div>
             
             <h1 className="text-3xl md:text-4xl font-bold mb-2">Laser Dash</h1>

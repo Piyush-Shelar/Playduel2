@@ -26,7 +26,7 @@ import Memory from './pages/Games/Memory';
 import MemoryGame from './pages/Games/MemoryMatch';
 import Reflex from './pages/Games/Reflex';
 import Lazer from './pages/Games/Lazer';
-
+import Word from './pages/Games/Word';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -98,7 +98,8 @@ function App() {
   const isGamePage = location.pathname.startsWith("/memory") || 
                       location.pathname.startsWith("/memorymatch") || 
                       location.pathname.startsWith("/reflex") || 
-                      location.pathname.startsWith("/lazer") ;
+                      location.pathname.startsWith("/lazer")  ||
+                      location.pathname.startsWith("/word") ;
 
 
   return (
@@ -152,6 +153,7 @@ function App() {
         <Route path="memorymatch" element={<MemoryGame user={user} />} />
         <Route path="reflex" element={<Reflex/>} />
         <Route path='lazer' element={<Lazer />} />
+        <Route path="word" element={<Word />} />
 
 
         {/* DASHBOARD */}
