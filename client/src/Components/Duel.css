@@ -1,0 +1,147 @@
+/* ===== ROOT THEME ===== */
+body {
+  background-color: #0b0f1a;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #e6ecff;
+}
+
+.duel-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* ===== COUNTDOWN ===== */
+.countdown {
+  text-align: center;
+  font-size: 28px;
+  color: #4da3ff;
+  margin-top: 60px;
+}
+
+/* ===== TOTAL TIMER BOX ===== */
+.total-timer-box {
+  border: 2px solid #2ecc71;
+  color: #2ecc71;
+  padding: 10px 16px;
+  border-radius: 8px;
+  width: fit-content;
+  margin: 0 auto 20px auto;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* ===== QUESTION CARD ===== */
+.question-card {
+  background:linear-gradient(90deg,rgb(122, 222, 122), rgb(13, 148, 58));
+  border-radius: 14px;
+  padding: 25px;
+  box-shadow: 0 0 18px rgba(0, 140, 255, 0.25);
+  margin-bottom: 20px;
+}
+
+.question-title {
+  font-size: 22px;
+  margin-bottom: 12px;
+  color: #dbe6ff;
+}
+
+/* ===== QUESTION TIMER ===== */
+.question-timer {
+  font-size: 16px;
+  margin-bottom: 18px;
+  color: white;
+}
+
+/* ===== OPTIONS ===== */
+.options-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.option-btn {
+  background: #102a56;
+  color: #dbe6ff;
+  border: 1px solid #1e4fa3;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 15px;
+}
+
+.option-btn:hover:not(:disabled) {
+  background: #1e4fa3;
+}
+
+.option-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.option-selected {
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  color: #fff;
+  border: 1px solid #00ffcc;
+  box-shadow: 0 0 10px rgba(0, 198, 255, 0.7);
+}
+
+
+/* ===== NAVIGATION BUTTONS ===== */
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.prev-btn {
+  background-color: #c0392b;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.prev-btn:hover {
+  background-color: #e74c3c;
+}
+
+.next-btn {
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.next-btn:hover {
+  background-color: #2ecc71;
+}
+
+/* ===== SUBMIT BUTTON ===== */
+.submit-btn {
+  display: block;
+  margin: 20px auto 0 auto;
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #2ecc71;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .options-container {
+    grid-template-columns: 1fr;
+  }
+}
