@@ -25,7 +25,12 @@ app.get("/",(req,res)=>{
     res.send("Server is Running ! ")
 })
 
-
+app.use(
+  "/images",
+  express.static(
+    "E:/Dr.Doom Vault/SkillsDuel/Skill2Duels/SkillDuel/images"
+  )
+);
 
 const PORT = process.env.PORT || 4000
 
