@@ -684,7 +684,7 @@ export default function LaserGamePage() {
       return;
     }
 
-      await fetch("http://localhost:4080/api/game/attempt", {
+      await fetch("http://localhost:4000/api/game/attempt", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -706,7 +706,7 @@ export default function LaserGamePage() {
   const fetchLeaderboard = async () => {
     try {
       const res = await fetch(
-        "http://localhost:4080/api/game/leaderboard?game=lazer"
+        "http://localhost:4000/api/game/leaderboard?game=lazer"
       );
       const data = await res.json();
 
