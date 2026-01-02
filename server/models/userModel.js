@@ -53,24 +53,7 @@ const statsSchema = new mongoose.Schema(
 /* ============================
    Arcade Game Sub-Schema
 ============================ */
-const arcadeGameSchema = new mongoose.Schema(
-  {
-    gameId: { type: String, required: true },
-    gameName: { type: String, required: true },
 
-    isActivated: { type: Boolean, default: true },
-
-    totalPlays: { type: Number, default: 1 },
-    bestScore: { type: Number, default: 0 },
-
-    totalXPearned: { type: Number, default: 0 },
-    currentStreak: { type: Number, default: 0 },
-
-    firstPlayedAt: { type: Date, default: Date.now },
-    lastPlayedAt: { type: Date, default: Date.now }
-  },
-  { _id: false }
-);
 
 /* ============================
    Main User Schema
@@ -116,10 +99,7 @@ const userSchema = new mongoose.Schema(
       default: () => ({})
     },
 
-    arcadeGames: {
-      type: [arcadeGameSchema],
-      default: []
-    }
+
   },
   { timestamps: true }
 );
