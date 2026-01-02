@@ -397,7 +397,7 @@ export default function WordMatrixPage() {
       return;
     }
 
-      await fetch("http://localhost:4080/api/game/attempt", {
+      await fetch("http://localhost:4000/api/game/attempt", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -419,7 +419,7 @@ export default function WordMatrixPage() {
   const fetchLeaderboard = async () => {
     try {
       const res = await fetch(
-        "http://localhost:4080/api/game/leaderboard?game=wordmatrix"
+        "http://localhost:4000/api/game/leaderboard?game=wordmatrix"
       );
       const data = await res.json();
       const formatted = data.map((item, index) => ({
