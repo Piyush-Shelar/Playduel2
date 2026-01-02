@@ -107,7 +107,8 @@ function App() {
                       location.pathname.startsWith("/memorymatch") || 
                       location.pathname.startsWith("/reflex") || 
                       location.pathname.startsWith("/lazer")  ||
-                      location.pathname.startsWith("/word") ;
+                      location.pathname.startsWith("/word") ||
+                      location.pathname.startsWith("/invitefriends") ;
 
 
   return (

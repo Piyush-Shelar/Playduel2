@@ -674,18 +674,25 @@ export default function LaserGamePage() {
     }
   };
 
-  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const currentUser = JSON.parse(localStorage.getItem("user")) || {} ;
+  const userId = currentUser?.id  || currentUser.id || currentUser._id ;
 
   const sendScoreToBackend = async (finalScore) => {
     try {
+      if (!userId) {
+      console.warn("No userId found, score not sent");
+      return;
+    }
+
       await fetch("http://localhost:4080/api/game/attempt", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId: currentUser?.id || "guest",
-          userName: currentUser?.fullName || "Guest",
+          // userId: currentUser?.id || "guest" || currentUser.id ,
+          userId ,
+          userName: currentUser?.fullName ||currentUser.fullName|| "Guest" || "Anonymous",
           game: "lazer",
           score: finalScore,
         }),
