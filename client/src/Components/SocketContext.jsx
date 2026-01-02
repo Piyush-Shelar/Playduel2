@@ -6,7 +6,7 @@ import {useNavigate} from "react-router-dom"
 
 const SocketContext = createContext();
 
-const socket = io("http://localhost:9000");
+const socket = io("http://localhost:4080");
 
 export const SocketProvider = ({ children }) => {
   const [invite, setInvite] = useState(null);

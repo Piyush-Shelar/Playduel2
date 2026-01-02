@@ -72,6 +72,39 @@ router.get("/leaderboard", async (req, res) => {
   }
 });
 
+/* ---------------- GET CATEGORIES ---------------- */
+router.get("/categories", async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+
+    const categories = await db
+      .collection("categories")
+      .find({})
+      .toArray();
+
+    res.json(categories);
+  } catch (err) {
+    console.error("Categories fetch error:", err);
+    res.status(500).json({ message: "Failed to fetch categories" });
+  }
+});
+
+router.get("/quiz/:category", async (req, res) => {
+  const { category } = req.params;
+  const db = mongoose.connection.db;
+
+  const questions = await db
+    .collection("questions")
+    .find({ category })
+    .limit(10)
+    .toArray();
+
+  res.json(questions);
+});
+
+
+
+
 // router.get("/leaderboard", async (req, res) => {
 //   try {
 //     const { game } = req.query;

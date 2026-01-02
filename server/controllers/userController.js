@@ -150,3 +150,11 @@ export const uploadAvatar = async (req, res) => {
 };
 
 
+// export const getFriends = async (req, res) => {
+//   try {
+//     const users = await User.find({}, "fullName email _id");
+//     res.json(users);
+//   } catch (err) {
+//     res.status(500).json({ message: "Failed to fetch friends" });
+//   }
+// };

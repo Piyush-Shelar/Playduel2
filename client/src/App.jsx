@@ -22,6 +22,7 @@ import ContactUs from "./Components/ContactUs";
 import Features from "./Components/Features";
 import Pricing from "./Components/Pricing";
 import Friends from "./Components/Friends";
+import Word from './pages/Games/Word';
 
 /* Games */
 import Memory from "./pages/Games/Memory";
@@ -113,11 +114,14 @@ function App() {
   ====================================================== */
   const isDashboard = location.pathname.startsWith("/dashboard");
 
-  const isGamePage =
-    location.pathname.startsWith("/memory") ||
-    location.pathname.startsWith("/memorymatch") ||
-    location.pathname.startsWith("/reflex") ||
-    location.pathname.startsWith("/lazer");
+  // const isgamesPage = location.pathname.startsWith("/memory","/memorymatch");
+  const isGamePage = location.pathname.startsWith("/memory") || 
+                      location.pathname.startsWith("/memorymatch") || 
+                      location.pathname.startsWith("/reflex") || 
+                      location.pathname.startsWith("/lazer")  ||
+                      location.pathname.startsWith("/word") ||
+                      location.pathname.startsWith("/invitefriends") ;
+
 
   /* ======================================================
      RENDER
@@ -179,11 +183,12 @@ function App() {
           }
         />
 
-        {/* GAMES */}
-        <Route path="/memory" element={<Memory />} />
-        <Route path="/memorymatch" element={<MemoryGame user={user} />} />
-        <Route path="/reflex" element={<Reflex />} />
-        <Route path="/lazer" element={<Lazer />} />
+        <Route path="memory" element={<Memory />} />
+        <Route path="memorymatch" element={<MemoryGame user={user} />} />
+        <Route path="reflex" element={<Reflex/>} />
+        <Route path='lazer' element={<Lazer />} />
+        <Route path="word" element={<Word />} />
+
 
         {/* DASHBOARD */}
         <Route

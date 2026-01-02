@@ -1,3 +1,4 @@
+import { UserIcon } from "lucide-react";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -392,11 +393,17 @@ export default function ReflexGamePage() {
     }
   };
 
-  const currentUser = JSON.parse(localStorage.getItem("user"));
-  const userId = currentUser?.id;
+  const currentUser = JSON.parse(localStorage.getItem("user")) || {} ;
+  const userId = currentUser?.id  || currentUser.id || currentUser._id ;
 
   const sendScoreToBackend = async (finalScore) => {
     try {
+      if (!userId) {
+      console.warn("No userId found, score not sent");
+      return;
+    }
+
+
       await fetch("http://localhost:4080/api/game/attempt", {
         method: "POST",
         headers: {
@@ -404,7 +411,8 @@ export default function ReflexGamePage() {
         },
         body: JSON.stringify({
           userId,
-          userName: currentUser.fullName,
+          //userId: currentUser.id ,
+          userName: currentUser.fullName|| "Anonymous",
           game: "reflex",
           score: finalScore,
         }),

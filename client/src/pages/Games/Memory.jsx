@@ -484,13 +484,18 @@ export default function MemoryGamePage() {
     }
   };
 
-  const currentUser = JSON.parse(localStorage.getItem("user"));
-  const userId = currentUser?.id;
+  const currentUser = JSON.parse(localStorage.getItem("user"))  || {} ;
+  const userId = currentUser?.id || currentUser.id || currentUser._id;
  
 
 
   const sendScoreToBackend = async (finalScore) => {
   try {
+    if (!userId) {
+      console.warn("No userId found, score not sent");
+      return;
+    }
+      
     await fetch("http://localhost:4080/api/game/attempt", {
       method: "POST",
       headers: {
@@ -499,9 +504,11 @@ export default function MemoryGamePage() {
       body: JSON.stringify({
         // userId: "test-user-frontend", // TEMP (JWT later)
         //userId,
-        userId: currentUser.id,
+        
+        // userId: currentUser.id,
+        userId,
         // userName: currentUser.fullName, // ✅ REAL NAME
-        userName: currentUser.fullName,
+        userName: currentUser.fullName || "Anonymous",
         game: "memory",
         score: finalScore,
       }),
