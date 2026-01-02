@@ -1,0 +1,182 @@
+/* Page background */
+.friends-container {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #0a0f2c, #02030a);
+  padding: 40px 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: white;
+}
+
+/* Title */
+.friends-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 40px;
+  color: #1f5cff;
+  text-shadow: 0 0 12px rgba(31, 92, 255, 0.7);
+}
+
+/* Card list */
+.friends-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Card */
+.friend-card {
+  background: linear-gradient(135deg, #050914, #0b1230);
+  border: 1px solid rgba(31, 92, 255, 0.3);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 0 18px rgba(31, 92, 255, 0.15);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* Hover effect */
+.friend-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 0 30px rgba(31, 92, 255, 0.45);
+  border-color: #1f5cff;
+}
+
+/* Username */
+.friend-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+/* Email */
+.friend-email {
+  font-size: 0.95rem;
+  color: #9bb0ff;
+  letter-spacing: 0.5px;
+}
+
+/* Full screen dark overlay */
+.invite-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(5, 8, 20, 0.85);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Modal container */
+.invite-modal {
+  width: 380px;
+  background: linear-gradient(180deg, #050b1e, #02050f);
+  border-radius: 18px;
+  padding: 28px 26px;
+  text-align: center;
+  border: 1px solid rgba(0, 140, 255, 0.35);
+  box-shadow:
+    0 0 25px rgba(0, 140, 255, 0.25),
+    inset 0 0 15px rgba(0, 140, 255, 0.15);
+  animation: popIn 0.35s ease-out;
+}
+
+/* Title */
+.invite-modal h2 {
+  color: #2da7ff;
+  font-size: 1.6rem;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(45, 167, 255, 0.6);
+}
+
+/* Subtitle */
+.invite-modal p {
+  color: #cbd7ff;
+  font-size: 0.95rem;
+  margin-bottom: 26px;
+  opacity: 0.85;
+}
+
+/* Buttons container */
+.invite-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+/* Accept button */
+.accept-btn {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #1f8cff, #00e0ff);
+  color: #020a14;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(0, 200, 255, 0.5);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.accept-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 25px rgba(0, 200, 255, 0.9);
+}
+
+/* Reject button */
+.reject-btn {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 80, 80, 0.6);
+  background: transparent;
+  color: #ff5a5a;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: inset 0 0 10px rgba(255, 80, 80, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reject-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow:
+    0 0 15px rgba(255, 80, 80, 0.8),
+    inset 0 0 15px rgba(255, 80, 80, 0.4);
+}
+
+/* Animation */
+@keyframes popIn {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.leaderboard {
+  margin-top: 30px;
+  padding: 20px;
+  background: linear-gradient(180deg, #020617, #020b2a);
+  border: 1px solid #00ffcc;
+  border-radius: 12px;
+  color: white;
+  text-align: center;
+}
+
+.leaderboard-row {
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+/* ===== GLOBAL THEME ===== */

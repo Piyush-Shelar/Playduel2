@@ -28,6 +28,13 @@ import Memory from "./pages/Games/Memory";
 import MemoryGame from "./pages/Games/MemoryMatch";
 import Reflex from "./pages/Games/Reflex";
 import Lazer from "./pages/Games/Lazer";
+import AppProvider from './Components/Appcontext';
+import Invitefriends from './Components/Invitefriends';
+import { SocketProvider } from './Components/SocketContext';
+import InviteModal from './Components/InviteModal';
+import Duel from './Components/Duel';
+import Duelresult from './Components/Duelresult';
+
 
 function App() {
   const [user, setUser] = useState(null);
@@ -117,6 +124,11 @@ function App() {
   ====================================================== */
   return (
     <>
+      <SocketProvider>
+      
+      
+     <AppProvider>
+      <InviteModal />
       {/* LOGIN POPUP */}
       {showLogin && (
         <LoginPopup setShowLogin={setShowLogin} setUser={setUser} />
@@ -151,6 +163,11 @@ function App() {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/features" element={<Features />} />
         <Route path="/pricing" element={<Pricing />} />
+         <Route path="/" element={<LandingPage />} />
+        <Route path="/invitefriends" element={<Invitefriends/>}/>
+        <Route path="/duel" element={<Duel />} />
+        <Route path="/duelresult/:roomId" element={<Duelresult />} />
+
 
         {/* PROFILE */}
         <Route
@@ -191,6 +208,8 @@ function App() {
 
       {/* FOOTER */}
       {!isDashboard && !isGamePage && <Footer />}
+      </AppProvider>
+      </SocketProvider>
     </>
   );
 }
