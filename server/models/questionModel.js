@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const questionSchema = new mongoose.Schema( {
     category: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      ref: "category",
       required: true,
     },
 
@@ -15,12 +15,6 @@ const questionSchema = new mongoose.Schema( {
     },
 
     correctAnswer: { type: Number, required: true },
-
-    difficulty: {
-      type: String,
-      enum: ["Easy", "Medium", "Hard"],
-      default: "Easy",
-    },
   },
   { timestamps: true }
 )

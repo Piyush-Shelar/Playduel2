@@ -3,9 +3,16 @@ import mongoose from "mongoose";
 
 
 const categorySchema = new mongoose.Schema({
-    name: { type: String, required: true },
+    name: { type: String, required: true,unique:true },
     description: { type: String, default: "" },
     timePerQuestion: { type: Number, default: 30 },
+        difficulty: {
+      type: String,
+      enum: ["Easy", "Medium", "Hard"],
+      default: "Easy",
+    },
+    questionCount: { type: Number, default: 0 }
+
   },
   { timestamps: true }
 )

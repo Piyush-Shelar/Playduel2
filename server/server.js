@@ -2,7 +2,7 @@ import "dotenv/config"
 import express from "express";
 import cors from "cors"
 import { ConnectDB } from "./configs/db.js";
-import gameRoutes from "./routes/game.routes.js";
+import gameRoutes from "./routes/game.routes.js"
 import adminRouter from "./routes/adminRoute.js";
 import userRoutes from "./routes/userRoute.js";
 
@@ -10,6 +10,7 @@ const app = express()
 
 
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 app.use(cors())
 app.use("/api/game",gameRoutes)
 

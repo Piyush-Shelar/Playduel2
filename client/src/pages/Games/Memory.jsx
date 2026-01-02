@@ -486,6 +486,7 @@ export default function MemoryGamePage() {
 
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const userId = currentUser?.id;
+ 
 
 
   const sendScoreToBackend = async (finalScore) => {
@@ -497,9 +498,10 @@ export default function MemoryGamePage() {
       },
       body: JSON.stringify({
         // userId: "test-user-frontend", // TEMP (JWT later)
-        userId,
+        //userId,
+        userId: currentUser.id,
         // userName: currentUser.fullName, // ✅ REAL NAME
-        userName: currentUser.name,
+        userName: currentUser.fullName,
         game: "memory",
         score: finalScore,
       }),
@@ -514,13 +516,18 @@ export default function MemoryGamePage() {
 
 const fetchLeaderboard = async () => {
   try {
-    const res = await fetch("http://localhost:4080/api/game/leaderboard");
+    // const res = await fetch("http://localhost:4080/api/game/leaderboard");
+    const res = await fetch(
+        "http://localhost:4080/api/game/leaderboard?game=memory"
+    );
+
     const data = await res.json();
+    // console.log(data)
 
     // transform backend data → UI-friendly format
     const formatted = data.map((item, index) => ({
       rank: index + 1,
-      name: item.name || item.userId, 
+      name: item.userName || item.userId || item.fullName || item.name, 
       // name: item._id,              // userId for now
       score: item.bestScore,
       // isYou: item._id === "test-user-frontend" // TEMP (JWT later)
