@@ -239,7 +239,7 @@ const LoginPopup = ({ setShowLogin, setUser }) => {
      localStorage.setItem("userId", user.id);
      localStorage.setItem("username", user.name);
 
-      const username = localStorage.getItem("username");
+      const username = localStorage.getItem("username" );
      console.log(username);// ✅ ADD THIS
       setUser(user);
 
