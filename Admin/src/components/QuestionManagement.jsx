@@ -117,23 +117,23 @@ displayQuestion()
               <div className="flex items-center justify-between mb-4">
                 <div className="flex gap-2 flex-wrap">
                   <span
-                    title={q.category.name}
+                    title={q.category?.name}
                     className="flex items-center gap-2 px-3 py-1 text-xs
                                    bg-blue-500/20 text-blue-400 rounded-full
                                    max-w-[120px] md:max-w-none
                                    truncate md:whitespace-normal"
                   >
-                    <FaTag className="shrink-0" /> {q.category.name}
+                    <FaTag className="shrink-0" /> {q.category?.name}
                   </span>
 
                   <span className="flex items-center gap-2 px-3 py-1 text-xs
                                    bg-purple-500/20 text-purple-400 rounded-full">
-                    <FaSignal /> {q.category.difficulty}
+                    <FaSignal /> {q.category?.difficulty}
                   </span>
 
                   <span className="flex items-center gap-2 px-3 py-1 text-xs
                                    bg-emerald-500/20 text-emerald-400 rounded-full">
-                    <FaClock /> {q.category.timePerQuestion}s
+                    <FaClock /> {q.category?.timePerQuestion}s
                   </span>
                 </div>
 
