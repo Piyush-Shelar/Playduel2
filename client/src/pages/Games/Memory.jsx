@@ -484,23 +484,31 @@ export default function MemoryGamePage() {
     }
   };
 
-  const currentUser = JSON.parse(localStorage.getItem("user"));
-  const userId = currentUser?.id;
+  const currentUser = JSON.parse(localStorage.getItem("user"))  || {} ;
+  const userId = currentUser?.id || currentUser.id || currentUser._id;
  
 
 
   const sendScoreToBackend = async (finalScore) => {
   try {
-    await fetch("http://localhost:4080/api/game/attempt", {
+    if (!userId) {
+      console.warn("No userId found, score not sent");
+      return;
+    }
+      
+    await fetch("http://localhost:4000/api/game/attempt", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         // userId: "test-user-frontend", // TEMP (JWT later)
+        //userId,
+        
+        // userId: currentUser.id,
         userId,
         // userName: currentUser.fullName, // ✅ REAL NAME
-        userName: currentUser.fullName,
+        userName: currentUser.fullName || "Anonymous",
         game: "memory",
         score: finalScore,
       }),
@@ -515,14 +523,18 @@ export default function MemoryGamePage() {
 
 const fetchLeaderboard = async () => {
   try {
-    const res = await fetch("http://localhost:4080/api/game/leaderboard");
+    // const res = await fetch("http://localhost:4080/api/game/leaderboard");
+    const res = await fetch(
+        "http://localhost:4000/api/game/leaderboard?game=memory"
+    );
+
     const data = await res.json();
-    console.log(data)
+    // console.log(data)
 
     // transform backend data → UI-friendly format
     const formatted = data.map((item, index) => ({
       rank: index + 1,
-      name: item.userName || item.userId, 
+      name: item.userName || item.userId || item.fullName || item.name, 
       // name: item._id,              // userId for now
       score: item.bestScore,
       // isYou: item._id === "test-user-frontend" // TEMP (JWT later)

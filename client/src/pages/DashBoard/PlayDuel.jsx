@@ -1,17 +1,43 @@
-import React, { useState } from "react";
+import React, { useState,useContext,useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaBolt, FaBrain, FaClock, FaTrophy } from "react-icons/fa";
+import axios from "axios"
+import { CatContext,IdContext } from "../../Components/Appcontext";
+import {useNavigate} from "react-router-dom"
 
 export default function PlayDuel() {
-  const quizDomains = [
-    { title: "General Knowledge", color: "from-[#ff6a00] to-[#ee0979]", xp: "+50 XP" },
-    { title: "Science & Technology", color: "from-[#1f5cff] to-[#00bcd4]", xp: "+120 XP" },
-    { title: "Sports", color: "from-[#00ff85] to-[#00d4ff]", xp: "+80 XP" },
-    { title: "History", color: "from-[#ff4b1f] to-[#1fddff]", xp: "+70 XP" },
-    { title: "Entertainment", color: "from-[#ff00c8] to-[#ffea00]", xp: "+90 XP" },
-  ];
+ const [quizdomains,setQuizdomains]=useState([])
 
   const [selectedQuiz, setSelectedQuiz] = useState("");
+
+  const navigate=useNavigate("")
+  const {userId}=useContext(IdContext)
+
+  
+
+  useEffect(()=>{
+
+  //  axios.get("http://localhost:4080/api/users/categories")
+    axios.get("http://localhost:4000/api/game/categories")
+   .then((res)=>{setQuizdomains(res.data);console.log(res.data)})
+   .catch((err)=>{console.log(err)})
+  
+
+  },[])
+
+  function handleCategory(category)
+  {
+    const data=category
+    // axios.post("http://localhost:4080/api/game/category",{
+    axios.post("http://localhost:4000/api/game/quiz/:category",{
+
+      category:data
+    })
+    .then((res)=>{console.log(res)})
+    .catch((err)=>{console.log(err)})
+  }
+
+
 
   const handleStartMatch = () => {
     if (!selectedQuiz) {
@@ -42,19 +68,24 @@ export default function PlayDuel() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {quizDomains.map((domain, idx) => (
+          {quizdomains.map((domain, idx) => (
             <motion.div
               key={idx}
               whileHover={{ scale: 1.05 }}
               className={`relative p-6 rounded-3xl cursor-pointer border border-white/20 shadow-xl overflow-hidden group`}
-              onClick={() => setSelectedQuiz(domain)}
+             onClick={(()=>{
+
+             handleCategory(domain.name)
+              navigate("/invitefriends")
+              //navigate(`/friends/${domain.name}`)
+             })}
             >
               {/* Glow */}
               <div className={`absolute inset-0 bg-gradient-to-br ${domain.color} opacity-25 blur-2xl group-hover:opacity-40 transition`} />
               
               {/* Card Content */}
               <div className="relative z-10 flex flex-col items-center justify-center gap-4">
-                <h2 className="text-2xl font-bold text-white">{domain.title}</h2>
+                <h2 className="text-2xl font-bold text-white">{domain.name}</h2>
                 <p className="text-white/70">{domain.xp}</p>
                 <motion.div
                   className="w-20 h-20 bg-white/5 rounded-full border border-white/20 shadow-inner flex items-center justify-center text-[#1f5cff] font-bold text-lg"

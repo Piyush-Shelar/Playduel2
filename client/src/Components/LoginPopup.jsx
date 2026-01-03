@@ -162,10 +162,13 @@
 
 
 //piyush backend code down here of login popup
-import React, { useState } from "react";
+import React, { useState ,useContext} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { IdContext } from "./Appcontext";
+import { useSocket } from "./SocketContext";
+
 const API = import.meta.env.VITE_API_BASE_URL;
 
 
@@ -175,6 +178,8 @@ const LoginPopup = ({ setShowLogin, setUser }) => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [msg, setMsg] = useState("");
+  const {id,setId}=useContext(IdContext)
+  const { socket } = useSocket();
 
   const navigate = useNavigate();
 
@@ -189,11 +194,14 @@ const LoginPopup = ({ setShowLogin, setUser }) => {
         //   email,
         //   password
         // });
-        const res = await axios.post(`${API}/api/users/register`, {
+      //  const res = await axios.post("http://localhost:9000/register", {
+      //  const res = await axios.post("http://localhost:4080/api/users/register", {
+       const res = await axios.post(`${API}/api/users/register`, {
           fullName,
           email,
-          password,
+          password
         });
+
 
 
         setMsg(res.data.message);
@@ -207,14 +215,20 @@ const LoginPopup = ({ setShowLogin, setUser }) => {
       //   password
       // });
 
-      const res = await axios.post(`${API}/api/users/login`, {
+        // const res = await axios.post("http://localhost:9000/login", {
+        // const res = await axios.post("http://localhost:4080/api/users/login", {
+        const res = await axios.post(`${API}/api/users/login`, {
         email,
-        password,
+        password
       });
 
 
-      const { token, user } = res.data;
 
+      const { token, user } = res.data;
+      console.log(user)
+         setId(user.id)
+      console.log(user.id)
+      socket.emit("register-user", user.id);
       // Store token
       // localStorage.setItem("token", token);
 
@@ -222,7 +236,11 @@ const LoginPopup = ({ setShowLogin, setUser }) => {
       // setUser(user);
 
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user)); // ✅ ADD THIS
+     localStorage.setItem("userId", user.id);
+     localStorage.setItem("username", user.name);
+
+      const username = localStorage.getItem("username");
+     console.log(username);// ✅ ADD THIS
       setUser(user);
 
 

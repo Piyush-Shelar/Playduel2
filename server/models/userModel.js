@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 const badgeSchema = new mongoose.Schema(
   {
     id: { type: Number, required: true },
-    icon: { type: String, required: true }, // Trophy, Star, Zap, etc.
+    icon: { type: String, required: true },
     label: { type: String, required: true }
   },
   { _id: false }
@@ -45,61 +45,15 @@ const statsSchema = new mongoose.Schema(
     totalWins: { type: Number, default: 0 },
     currentStreak: { type: Number, default: 0 },
     quizzesPlayed: { type: Number, default: 0 },
-    accuracy: { type: Number, default: 0 } // percentage
+    accuracy: { type: Number, default: 0 }
   },
   { _id: false }
 );
 
 /* ============================
    Arcade Game Sub-Schema
-   (Activated on First Play)
 ============================ */
-const arcadeGameSchema = new mongoose.Schema(
-  {
-    gameId: {
-      type: String,
-      required: true
-    },
-    gameName: {
-      type: String,
-      required: true
-    },
 
-    isActivated: {
-      type: Boolean,
-      default: true
-    },
-
-    totalPlays: {
-      type: Number,
-      default: 1
-    },
-    bestScore: {
-      type: Number,
-      default: 0
-    },
-
-    totalXPearned: {
-      type: Number,
-      default: 0
-    },
-
-    currentStreak: {
-      type: Number,
-      default: 0
-    },
-
-    firstPlayedAt: {
-      type: Date,
-      default: Date.now
-    },
-    lastPlayedAt: {
-      type: Date,
-      default: Date.now
-    }
-  },
-  { _id: false }
-);
 
 /* ============================
    Main User Schema
@@ -108,17 +62,26 @@ const userSchema = new mongoose.Schema(
   {
     fullName: {
       type: String,
-      required: true
+      required: true,
+      immutable: true // 🔒 cannot be changed
     },
+
     email: {
       type: String,
       required: true,
       unique: true,
       lowercase: true
     },
+
     password: {
       type: String,
       required: true
+    },
+
+    // 🖼️ Avatar / profile image path
+    filePath: {
+      type: String,
+      default: "" // Cloudinary URL / local path
     },
 
     badges: {
@@ -136,11 +99,7 @@ const userSchema = new mongoose.Schema(
       default: () => ({})
     },
 
-    // 🕹️ Arcade games activated on first play
-    arcadeGames: {
-      type: [arcadeGameSchema],
-      default: []
-    }
+
   },
   { timestamps: true }
 );

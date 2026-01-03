@@ -3,6 +3,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const {MongoClient}=require("mongodb")
+const http = require("http");
+const { Server } = require("socket.io");
+
 
 
 const app = express();
@@ -11,12 +14,181 @@ app.use(express.json());
 
 const JWT_SECRET = "supersecretkey";
 
+const server = http.createServer(app); // 🔑 IMPORTANT
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
 
 const url="mongodb+srv://piyushshelar10_db_user:vbXofPmn1uGJAUYB@cluster0.84hcptk.mongodb.net/?appName=Cluster0"
 
 
 // Fake DB
 let users = [];
+const rooms = {}; 
+// Map userId -> socketId
+const onlineUsers = {};
+
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  socket.on("register-user", (userId) => {
+    onlineUsers[userId] = socket.id;
+  });
+
+  socket.on("send-invite", ({ from, to }) => {
+    const receiverSocket = onlineUsers[to];
+    if (receiverSocket) {
+      io.to(receiverSocket).emit("receive-invite", { from });
+    }
+  });
+
+  socket.on("reject-invite", ({ from }) => {
+    const senderSocket = onlineUsers[from];
+    if (senderSocket) {
+      io.to(senderSocket).emit("invite-rejected");
+    }
+  });
+
+  socket.on("accept-invite", async ({ from, to }) => {
+    try {
+      const client = new MongoClient(url);
+      await client.connect();
+
+      const db = client.db("session");
+      const collec = db.collection("duel");
+
+      // ✅ get latest category selection
+      const selected = await collec.findOne({}, { sort: { _id: -1 } });
+
+      if (!selected) return;
+
+      const roomId = selected._id.toString();
+
+      // join both users
+      if (onlineUsers[from]) {
+        io.to(onlineUsers[from]).emit("start-match", roomId);
+      }
+      if (onlineUsers[to]) {
+        io.to(onlineUsers[to]).emit("start-match", roomId);
+      }
+
+      await client.close();
+    } catch (err) {
+      console.error("accept-invite error:", err);
+    }
+  });
+
+  socket.on("start-quiz", ({ roomId, questions }) => {
+  if (!rooms[roomId]) return;
+
+  rooms[roomId].questions = questions;
+});
+
+
+  socket.on("get-leaderboard", ({ roomId }) => {
+  const room = rooms[roomId];
+
+  if (!room) {
+    socket.emit("leaderboard-error", {
+      message: "Room not found"
+    });
+    return;
+  }
+
+  if (room.leaderboard) {
+    socket.emit("leaderboard-data", {
+      leaderboard: room.leaderboard
+    });
+  }
+});
+
+
+  socket.on("submit-quiz", ({ roomId, answers }) => {
+    const room = rooms[roomId];
+    console.log(room)
+    console.log(roomId)
+    console.log(answers)
+    if (!room) return;
+
+    let score = 0;
+
+    room.questions.forEach((q, index) => {
+      if (answers[index] === q.correctAnswer) {
+        score++;
+      }
+    });
+
+    room.submissions[socket.id] = score;
+    console.log(score)
+
+    // 🔥 when both players submit
+    if (Object.keys(room.submissions).length === 2) {
+       room.leaderboard = Object.entries(room.submissions).map(
+      ([socketId, score]) => {
+        const player = room.players.find(
+          p => p.socketId === socketId
+        );
+
+        return {
+          username: player?.username ,
+          score
+        };
+      }
+    );
+
+      room.leaderboard.sort((a, b) => b.score - a.score);
+     
+
+     io.to(roomId).emit("quiz-end", {
+      leaderboard: room.leaderboard
+    });
+
+      // optional cleanup
+     ;
+    }
+  });
+
+   
+
+  socket.on("join-room", ({ roomId, username }) => {
+  if (!rooms[roomId]) {
+    rooms[roomId] = {
+      questions: [],
+      submissions: {},
+      leaderboard: null,
+      players: []
+    };
+  }
+
+  // ❌ avoid duplicate entries
+  const alreadyJoined = rooms[roomId].players.find(
+    p => p.socketId === socket.id
+  );
+
+  if (!alreadyJoined) {
+    rooms[roomId].players.push({
+      socketId: socket.id,
+      username
+    });
+  }
+
+  socket.join(roomId);
+});
+
+  socket.on("disconnect", () => {
+    for (const userId in onlineUsers) {
+      if (onlineUsers[userId] === socket.id) {
+        delete onlineUsers[userId];
+        break;
+      }
+    }
+  });
+});
+
 
 /* REGISTER */
 app.post("/register", async (req, res) => {
@@ -165,8 +337,87 @@ app.get("/categories", async (req, res) => {
 
 
 
+app.get("/friends", async (req, res) => {
+  const client = new MongoClient(url);
 
-app.listen(9000, () => console.log("Server running on 9000"));
-app.listen(9000, () => console.log("Server is ready"));
 
+  try {
+    await client.connect();
+    const db = client.db("Users");
+    const collec = db.collection("details");
+
+    const people = await collec.find({}).toArray();
+
+    const result = people.map(user => ({
+      friend_id: user.id,
+      fullName: user.fullName,
+      email: user.email
+    }));
+
+    res.status(200).json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Server error" });
+  } finally {
+    await client.close();
+  }
+});
+
+app.get("/quiz/:category", async (req, res) => {
+  const client = new MongoClient(url);
+
+  try {
+    await client.connect();
+    const db = client.db("quizapp");
+    const collection = db.collection("questions");
+    const { category } = req.params;
+
+    const questions = await collection
+      .find({ category })
+      .limit(10)
+      .toArray();
+
+    res.status(200).json(questions);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
+app.post("/category", async (req, res) => {
+  const client = new MongoClient(url);
+  await client.connect();
+
+  const db = client.db("session");
+  const collec = db.collection("duel");
+
+  const { category } = req.body;
+
+  await collec.insertOne({
+    category,
+    createdAt: new Date()
+  });
+
+  await client.close();
+  res.json({ success: true });
+});
+
+
+app.get("/category1", async (req, res) => {
+  const client = new MongoClient(url);
+  await client.connect();
+
+  const db = client.db("session");
+  const collec = db.collection("duel");
+
+  const selected = await collec.findOne({}, { sort: { _id: -1 } });
+
+  await client.close();
+  res.json(selected);
+});
+
+server.listen(9000, () => {
+  console.log("Server + Socket.IO running on http://localhost:9000");
+});
 

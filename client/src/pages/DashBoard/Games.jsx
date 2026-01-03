@@ -7,7 +7,7 @@ export default function ArcadeGames() {
   const games = [
     { 
       id: "memory", 
-      name: "Memory Fiesta", 
+      name: "Memory ", 
       desc: "Recreate patterns under time pressure.", 
       long: "Improve working memory and visual recall by observing patterns and recreating them accurately as difficulty increases.", 
       skill: "Memory", 
@@ -18,7 +18,7 @@ export default function ArcadeGames() {
     },
     { 
       id: "reflex", 
-      name: "Reflex Fiesta", 
+      name: "Reflex ", 
       desc: "Quick-fire reflex challenges.", 
       long: "Test your reaction time and precision by clicking targets as they appear.", 
       skill: "Reflex", 
@@ -28,23 +28,23 @@ export default function ArcadeGames() {
       xp: "+70 XP"
     },
     { 
-      id: "train", 
-      name: "Train Fiesta", 
-      desc: "Attention & reaction control game.", 
-      long: "Guide trains by switching tracks at the correct time, sharpening focus and response accuracy.", 
+      id: "lazer", 
+      name: "Lazer Dash", 
+      desc: "Obstacle-jumping reflex game.", 
+      long: "Leap over incoming hurdles at the right moment, boosting agility, timing, and quick decision-making.", 
       skill: "Attention", 
-      tags: ["Reflex","Focus"], 
-      icon: "🚆",
+      tags: ["Agility","Timing"], 
+      icon: "🏃‍♂️",
       color: "from-[#00ff85] to-[#00d4ff]",
       xp: "+60 XP"
     },
     { 
       id: "word", 
-      name: "Word Fiesta", 
-      desc: "Vocabulary ordering challenges.", 
-      long: "Arrange words by meaning or intensity to enhance vocabulary depth and language intuition.", 
+      name: "Word Matrix", 
+      desc: "Grid-based word discovery game.", 
+      long: "Connect adjacent letters in a timed grid to form valid words, testing vocabulary depth, pattern recognition, and strategic focus under pressure.", 
       skill: "Vocabulary", 
-      tags: ["Words","AI"], 
+      tags: ["Words","Pattern","Strategy"], 
       icon: "📚",
       color: "from-[#ff00c8] to-[#ffea00]",
       xp: "+80 XP"
@@ -69,7 +69,14 @@ export default function ArcadeGames() {
     } 
     else if (game.id === "reflex") {
       navigate("/reflex");
-    } else {
+    }
+    else if (game.id === "lazer") {
+      navigate("/lazer");
+    }
+    else if (game.id === "word") {
+      navigate("/word");
+    }
+    else {
       alert(`Starting ${game.name}! (Page under development)`);
     }
 

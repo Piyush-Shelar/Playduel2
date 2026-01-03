@@ -1,3 +1,4 @@
+import { UserIcon } from "lucide-react";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -392,19 +393,26 @@ export default function ReflexGamePage() {
     }
   };
 
-  const currentUser = JSON.parse(localStorage.getItem("user"));
-  const userId = currentUser?.id;
+  const currentUser = JSON.parse(localStorage.getItem("user")) || {} ;
+  const userId = currentUser?.id  || currentUser.id || currentUser._id ;
 
   const sendScoreToBackend = async (finalScore) => {
     try {
-      await fetch("http://localhost:4080/api/game/attempt", {
+      if (!userId) {
+      console.warn("No userId found, score not sent");
+      return;
+    }
+
+
+      await fetch("http://localhost:4000/api/game/attempt", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId,
-          userName: currentUser.name,
+          //userId: currentUser.id ,
+          userName: currentUser.fullName|| "Anonymous",
           game: "reflex",
           score: finalScore,
         }),
@@ -417,12 +425,16 @@ export default function ReflexGamePage() {
 
   const fetchLeaderboard = async () => {
     try {
-      const res = await fetch("http://localhost:4080/api/game/leaderboard");
+      // const res = await fetch("http://localhost:4080/api/game/leaderboard");
+      const res = await fetch(
+          "http://localhost:4000/api/game/leaderboard?game=reflex"
+      );
+
       const data = await res.json();
 
       const formatted = data.map((item, index) => ({
         rank: index + 1,
-        name: item.name || item.userId,
+        name: item.userName || item.userId || item.fullName || item.name,
         score: item.bestScore,
         isYou: item.userId === "test-user-frontend"
       }));
