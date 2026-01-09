@@ -13,9 +13,12 @@ export default function PlayDuel() {
   const navigate=useNavigate("")
   const {userId}=useContext(IdContext)
 
+  
+
   useEffect(()=>{
 
-   axios.get("http://localhost:9000/categories")
+  //  axios.get("http://localhost:4080/api/users/categories")
+    axios.get("http://localhost:4000/api/game/categories")
    .then((res)=>{setQuizdomains(res.data);console.log(res.data)})
    .catch((err)=>{console.log(err)})
   
@@ -25,12 +28,25 @@ export default function PlayDuel() {
   function handleCategory(category)
   {
     const data=category
-    axios.post("http://localhost:9000/category",{
+    // axios.post("http://localhost:4080/api/game/category",{
 
-      category:data
+    // axios.post(`http://localhost:4000/api/game/quiz/${category}`,{
+
+    //   // category:data
+    //   category
+    // })
+    // .then((res)=>{console.log(res)})
+    // .catch((err)=>{console.log(err)})
+
+    axios.get(
+      `http://localhost:4000/api/game/quiz/${encodeURIComponent(category)}`
+    )
+    .then(res => {
+      console.log("Questions:", res.data);
     })
-    .then((res)=>{console.log(res)})
-    .catch((err)=>{console.log(err)})
+    .catch(err => console.log(err));
+
+
   }
 
 
@@ -70,10 +86,11 @@ export default function PlayDuel() {
               whileHover={{ scale: 1.05 }}
               className={`relative p-6 rounded-3xl cursor-pointer border border-white/20 shadow-xl overflow-hidden group`}
              onClick={(()=>{
+              setSelectedQuiz(domain);   // ✅ THIS WAS MISSING
 
              handleCategory(domain.name)
               navigate("/invitefriends")
-              //navigate(`/friends/${domain.name}`)
+              // navigate(`/friends/${domain.name}`)
              })}
             >
               {/* Glow */}

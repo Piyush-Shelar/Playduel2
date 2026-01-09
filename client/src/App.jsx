@@ -21,11 +21,13 @@ import ContactUs from "./Components/ContactUs";
 import Features from "./Components/Features";
 import Pricing from "./Components/Pricing";
 import Friends from "./Components/Friends";
-import Memory from './pages/Games/Memory';
-import MemoryGame from './pages/Games/MemoryMatch';
-import Reflex from './pages/Games/Reflex';
-import Lazer from './pages/Games/Lazer';
+import Word from './pages/Games/Word';
 
+/* Games */
+import Memory from "./pages/Games/Memory";
+import MemoryGame from "./pages/Games/MemoryMatch";
+import Reflex from "./pages/Games/Reflex";
+import Lazer from "./pages/Games/Lazer";
 import AppProvider from './Components/Appcontext';
 import Invitefriends from './Components/Invitefriends';
 import { SocketProvider } from './Components/SocketContext';
@@ -46,7 +48,17 @@ function App() {
   const API = import.meta.env.VITE_API_BASE_URL;
 
   /* ======================================================
-     AUTH RESTORE (SINGLE SOURCE OF TRUTH)
+     1️⃣ RESTORE USER FROM LOCALSTORAGE (FAST)
+  ====================================================== */
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  /* ======================================================
+     2️⃣ VERIFY TOKEN WITH BACKEND (SOURCE OF TRUTH)
   ====================================================== */
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -73,6 +85,7 @@ function App() {
           profile: data.profile,
           stats: data.stats,
           badges: data.badges,
+          filePath: data.filePath,
         };
 
         setUser(fullUser);
@@ -88,7 +101,7 @@ function App() {
   }, [API]);
 
   /* ======================================================
-     UI EFFECTS
+     3️⃣ UI EFFECTS
   ====================================================== */
   useEffect(() => {
     setShowLogin(false);
@@ -99,7 +112,7 @@ function App() {
   }, [showLogin]);
 
   /* ======================================================
-     ROUTE HELPERS
+     4️⃣ ROUTE HELPERS
   ====================================================== */
   const isDashboard = location.pathname.startsWith("/dashboard");
 
@@ -107,9 +120,14 @@ function App() {
   const isGamePage = location.pathname.startsWith("/memory") || 
                       location.pathname.startsWith("/memorymatch") || 
                       location.pathname.startsWith("/reflex") || 
-                      location.pathname.startsWith("/lazer") ;
+                      location.pathname.startsWith("/lazer")  ||
+                      location.pathname.startsWith("/word") ||
+                      location.pathname.startsWith("/invitefriends") ;
 
 
+  /* ======================================================
+     RENDER
+  ====================================================== */
   return (
     <>
       <SocketProvider>
@@ -163,7 +181,7 @@ function App() {
 
 
 
-        {/* PROFILE (PUBLIC PATH) */}
+        {/* PROFILE */}
         <Route
           path="/profile"
           element={
@@ -177,17 +195,18 @@ function App() {
         <Route path="memorymatch" element={<MemoryGame user={user} />} />
         <Route path="reflex" element={<Reflex/>} />
         <Route path='lazer' element={<Lazer />} />
+        <Route path="word" element={<Word />} />
 
 
         {/* DASHBOARD */}
-       <Route
-  path="/dashboard"
-  element={
-    <ProtectedRoute user={user} authLoading={authLoading}>
-      <DashboardLayout user={user} setUser={setUser} />
-    </ProtectedRoute>
-  }
->
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute user={user} authLoading={authLoading}>
+              <DashboardLayout user={user} setUser={setUser} />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<DashboardArena />} />
           <Route path="duel" element={<PlayDuel />} />
           <Route

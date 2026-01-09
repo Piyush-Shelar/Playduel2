@@ -384,6 +384,7 @@ app.get("/categories", async (req, res) => {
 app.get("/friends", async (req, res) => {
   const client = new MongoClient(url);
 
+
   try {
     await client.connect();
     const db = client.db("Users");
@@ -460,8 +461,10 @@ app.get("/category1", async (req, res) => {
   res.json(selected);
 });
 
-/* --- remaining routes unchanged --- */
+
+
 
 server.listen(9000, () => {
   console.log("Server + Socket.IO running on http://localhost:9000");
 });
+
