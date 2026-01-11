@@ -188,6 +188,25 @@ const LoginPopup = ({ setShowLogin, setUser }) => {
 
     try {
       if (mode === "signup") {
+  const res = await axios.post("http://localhost:9000/register", {
+    fullName,
+    email,
+    password
+  });
+
+  const { token, user } = res.data;
+
+  localStorage.setItem("token", token);
+  localStorage.setItem("userId", user.id);
+  localStorage.setItem("username", user.profile.username);
+
+  setUser(user);
+  setShowLogin(false);
+  navigate("/dashboard");
+  return;
+}
+
+      /*if (mode === "signup") {
         // REGISTER API
         // const res = await axios.post("http://localhost:9000/register", {
         //   fullName,
@@ -207,7 +226,7 @@ const LoginPopup = ({ setShowLogin, setUser }) => {
         setMsg(res.data.message);
         setMode("signin"); // switch to login after signup
         return;
-      }
+      }*/
 
       // LOGIN API
       // const res = await axios.post("http://localhost:9000/login", {
@@ -222,9 +241,23 @@ const LoginPopup = ({ setShowLogin, setUser }) => {
         password
       });
 
-
-
       const { token, user } = res.data;
+
+    // 🔐 Store auth
+    localStorage.setItem("token", token);
+    localStorage.setItem("userId", user.id);
+
+    // 🧑 Store game-related user data
+    localStorage.setItem("username", user.profile.username);
+    localStorage.setItem("profile", JSON.stringify(user.profile));
+    localStorage.setItem("stats", JSON.stringify(user.stats));
+    localStorage.setItem("badges", JSON.stringify(user.badges));
+
+    // Context + socket
+    setId(user.id);
+    socket.emit("register-user", user.id);
+
+      /*const { token, user } = res.data;
       console.log(user)
          setId(user.id)
       console.log(user.id)
@@ -237,7 +270,7 @@ const LoginPopup = ({ setShowLogin, setUser }) => {
 
       localStorage.setItem("token", token);
      localStorage.setItem("userId", user.id);
-     localStorage.setItem("username", user.name);
+     localStorage.setItem("username", user.name);*/
 
       const username = localStorage.getItem("username" );
      console.log(username);// ✅ ADD THIS

@@ -254,11 +254,105 @@ io.on("connection", (socket) => {
   });
 });
 
+app.post("/register", async (req, res) => {
+  const client = new MongoClient(url);
+  await client.connect();
+
+  const db = client.db("skillduels");
+  const collec = db.collection("users");
+
+  const { fullName, email, password } = req.body;
+
+  const userExists = await collec.findOne({ email });
+  if (userExists)
+    return res.status(400).json({ message: "User already exists" });
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // auto-generate username
+  const username = email.split("@")[0];
+
+  const newUser = {
+    id: Date.now().toString(),
+    fullName,
+    email,
+    password: hashedPassword,
+
+    profile: {
+      username,
+      rank: "Bronze",
+      avatarIcon: "User"
+    },
+
+    stats: {
+      totalXP: 0,
+      level: 1,
+      currentStreak: 0
+    },
+
+    badges: []
+  };
+
+  await collec.insertOne(newUser);
+
+  const token = jwt.sign({ userId: newUser.id }, JWT_SECRET, {
+    expiresIn: "1h"
+  });
+
+  res.json({
+    message: "Account created successfully",
+    token,
+    user: {
+      id: newUser.id,
+      fullName: newUser.fullName,
+      email: newUser.email,
+      profile: newUser.profile,
+      stats: newUser.stats,
+      badges: newUser.badges
+    }
+  });
+});
+
+app.post("/login", async (req, res) => {
+  const client = new MongoClient(url);
+  await client.connect();
+
+  const db = client.db("skillduels");
+  const collec = db.collection("users");
+
+  const { email, password } = req.body;
+  const user = await collec.findOne({ email });
+  console.log(user);
+
+  if (!user) return res.status(401).json({ message: "Invalid credentials" });
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch)
+    return res.status(401).json({ message: "Invalid credentials" });
+
+  const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
+    expiresIn: "1h"
+  });
+
+  res.json({
+    token,
+    user: {
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      profile: user.profile,
+      stats: user.stats,
+      badges: user.badges
+    }
+  });
+});
+
+
 /* ======================
    EXPRESS ROUTES (UNCHANGED)
 ====================== */
 
-app.post("/register", async (req, res) => {
+/*app.post("/register", async (req, res) => {
   const client = new MongoClient(url);
   await client.connect();
 
@@ -309,7 +403,7 @@ app.post("/login", async (req, res) => {
     user: { id: user.id, name: user.fullName, email: user.email }
   });
 });
-
+*/
 app.get("/api/auth/me", async (req, res) => {
   const authHeader = req.headers.authorization;
 
@@ -325,8 +419,8 @@ app.get("/api/auth/me", async (req, res) => {
     const client = new MongoClient(url);
     await client.connect();
 
-    const db = client.db("Users");
-    const collec = db.collection("details");
+    const db = client.db("skillduels");
+    const collec = db.collection("users");
 
     const user = await collec.findOne({ id: decoded.userId });
 
@@ -390,8 +484,8 @@ app.get("/friends", async (req, res) => {
 
   try {
     await client.connect();
-    const db = client.db("Users");
-    const collec = db.collection("details");
+    const db = client.db("skillduels");
+    const collec = db.collection("users");
 
     const people = await collec.find({}).toArray();
 
