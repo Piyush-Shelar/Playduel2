@@ -46,6 +46,8 @@ io.on("connection", (socket) => {
 
   socket.on("send-invite", ({ from, to }) => {
     const receiverSocket = onlineUsers[to];
+    console.log("s"+from)
+    console.log("r"+to)
     if (receiverSocket) {
       io.to(receiverSocket).emit("receive-invite", { from });
     }
@@ -290,6 +292,7 @@ app.post("/login", async (req, res) => {
 
   const { email, password } = req.body;
   const user = await collec.findOne({ email });
+  console.log(user)
 
   if (!user) return res.status(401).json({ message: "Invalid credentials" });
 

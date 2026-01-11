@@ -19,7 +19,7 @@ function Invitefriends()
 
     useEffect(()=>{
     
-        axios.get("http://localhost:4000/api/users/friends")
+        axios.get("http://localhost:9000/friends")
         .then((res)=>{
             setFriends(res.data)
             console.log(res.data)
@@ -35,6 +35,8 @@ function Invitefriends()
     {
         const userid=id;
         const friend_id=friendId;
+        console.log(userid)
+        console.log(friend_id)
         socket.emit("send-invite", {
          from: userid,
          to: friend_id

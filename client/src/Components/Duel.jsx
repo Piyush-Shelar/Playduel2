@@ -33,6 +33,7 @@ function Duel() {
     axios.get("http://localhost:9000/category1").then((res) => {
       setRoomId(res.data._id);
       setCategory(res.data.category);
+      console.log(res.data.category)
     });
   }, []);
 
@@ -84,6 +85,7 @@ function Duel() {
     );
 
     const qs = res.data;
+    console.log(qs)
     setQuestions(qs);
 
     let total = 0;
