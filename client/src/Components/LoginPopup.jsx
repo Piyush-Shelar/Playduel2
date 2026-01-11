@@ -196,7 +196,7 @@ const LoginPopup = ({ setShowLogin, setUser }) => {
         // });
       //  const res = await axios.post("http://localhost:9000/register", {
       //  const res = await axios.post("http://localhost:4080/api/users/register", {
-       const res = await axios.post(`${API}/api/users/register`, {
+       const res = await axios.post(`http://localhost:9000/register`, {
           fullName,
           email,
           password
@@ -217,7 +217,7 @@ const LoginPopup = ({ setShowLogin, setUser }) => {
 
         // const res = await axios.post("http://localhost:9000/login", {
         // const res = await axios.post("http://localhost:4080/api/users/login", {
-        const res = await axios.post(`${API}/api/users/login`, {
+        const res = await axios.post(`http://localhost:9000/login`, {
         email,
         password
       });
