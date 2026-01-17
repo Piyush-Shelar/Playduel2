@@ -15,8 +15,11 @@ function Singleresult() {
     let totalScore = 0;
 
     questions.forEach((q, index) => {
-      if (answers[index] === q.correctAnswer) {
-        totalScore++;
+      const userAnswer = answers[index];
+      const correctOptionText = q.options[q.correctAnswer];
+
+      if (userAnswer === correctOptionText) {
+        totalScore++; // ✅ FIXED
       }
     });
 

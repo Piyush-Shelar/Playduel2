@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./Duel.css"; // reuse same CSS
+import "./Duel.css";
 
 function Singleplayer() {
   const { category } = useParams();
@@ -21,9 +21,25 @@ function Singleplayer() {
   const [questionTimeLeft, setQuestionTimeLeft] = useState({});
   const [quizFinished, setQuizFinished] = useState(false);
 
-  /* ---------- COUNTDOWN (5 sec) ---------- */
+  const [categoryId, setCategoryId] = useState("");
+  const [timePerQuestion, setTimePerQuestion] = useState(0);
+
+  /* ---------- FETCH CATEGORY META ---------- */
   useEffect(() => {
-    if (quizStarted) return;
+    axios
+      .get(`http://localhost:9000/categories/by-name/${category}`)
+      .then((res) => {
+        setCategoryId(res.data.categoryId);
+        setTimePerQuestion(res.data.timePerQuestion);
+        console.log("CategoryId:", res.data.categoryId);
+        console.log("Time per question:", res.data.timePerQuestion);
+      })
+      .catch((err) => console.error(err));
+  }, [category]);
+
+  /* ---------- COUNTDOWN ---------- */
+  useEffect(() => {
+    if (quizStarted || !categoryId) return;
 
     const timer = setInterval(() => {
       setCountdown((p) => {
@@ -37,31 +53,30 @@ function Singleplayer() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [quizStarted]);
+  }, [quizStarted, categoryId]);
 
   /* ---------- START QUIZ ---------- */
   const startQuiz = async () => {
+    if (!categoryId) return;
+
     setQuizStarted(true);
 
     const res = await axios.get(
-      `http://localhost:9000/quiz/${category}`
+      `http://localhost:9000/quiz/by-category/${categoryId}`
     );
 
     const qs = res.data;
+    console.log(qs)
     setQuestions(qs);
 
-    let total = 0;
     const timeMap = {};
-
-    qs.forEach((q, i) => {
-      const t = getTimeInSeconds(q.timelimit);
-      total += t;
-      timeMap[i] = t;
+    qs.forEach((_, i) => {
+      timeMap[i] = timePerQuestion;
     });
 
-    setTotalTimer(total);
     setQuestionTimeLeft(timeMap);
-    setQuestionTimer(timeMap[0]);
+    setQuestionTimer(timePerQuestion);
+    setTotalTimer(timePerQuestion * qs.length);
   };
 
   /* ---------- TOTAL TIMER ---------- */
@@ -104,24 +119,18 @@ function Singleplayer() {
     return () => clearInterval(t);
   }, [currentQ, quizStarted, questions]);
 
-  const getTimeInSeconds = (t) => {
-    const [n, u] = t.split(" ");
-    return u.startsWith("min") ? parseInt(n) * 60 : parseInt(n);
+  const submitQuiz = () => {
+    if (quizFinished) return;
+    setQuizFinished(true);
   };
 
-  const submitQuiz = () => {
-  if (quizFinished) return;
-  setQuizFinished(true);
-};
-
-useEffect(() => {
-  if (quizFinished) {
-    navigate("/singleplayer-result", {
-      state: { answers ,questions}
-    });
-  }
-}, [quizFinished, answers, navigate]);
-
+  useEffect(() => {
+    if (quizFinished) {
+      navigate("/singleplayer-result", {
+        state: { answers, questions }
+      });
+    }
+  }, [quizFinished, answers, navigate, questions]);
 
   return (
     <div className="duel-container">

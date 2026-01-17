@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
-const { MongoClient } = require("mongodb");
+const { MongoClient,ObjectId } = require("mongodb");
 const http = require("http");
 const { Server } = require("socket.io");
 
@@ -65,7 +65,7 @@ io.on("connection", (socket) => {
       const client = new MongoClient(url);
       await client.connect();
 
-      const db = client.db("session");
+      const db = client.db("skillduels");
       const collec = db.collection("duel");
 
       const selected = await collec.findOne({}, { sort: { _id: -1 } });
@@ -86,9 +86,10 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("start-quiz", ({ roomId, questions }) => {
+  socket.on("start-quiz", ({ roomId, questions,username }) => {
     if (!rooms[roomId]) return;
     rooms[roomId].questions = questions;
+    console.log("q", rooms[roomId].questions )
   });
 
   socket.on("get-leaderboard", ({ roomId }) => {
@@ -104,12 +105,20 @@ io.on("connection", (socket) => {
 
   socket.on("submit-quiz", ({ roomId, answers }) => {
     const room = rooms[roomId];
+    console.log(answers)
     if (!room) return;
 
     let score = 0;
     room.questions.forEach((q, index) => {
-      if (answers[index] === q.correctAnswer) score++;
-    });
+    const userAnswer = answers[index];
+    const correctOptionText = q.options[q.correctAnswer];
+    
+    
+    
+    if (userAnswer === correctOptionText) {
+      score++;
+    }
+  });
 
     room.submissions[socket.id] = score;
 
@@ -464,7 +473,7 @@ app.get("/categories", async (req, res) => {
     const client = new MongoClient(url);
     await client.connect();
 
-    const db = client.db("quizapp");
+    const db = client.db("skillduels");
     const collection = db.collection("categories");
 
     const categories = await collection.find({}).toArray();
@@ -504,7 +513,7 @@ app.get("/friends", async (req, res) => {
   }
 });
 
-app.get("/quiz/:category", async (req, res) => {
+/*app.get("/quiz/:category", async (req, res) => {
   const client = new MongoClient(url);
 
   try {
@@ -523,14 +532,14 @@ app.get("/quiz/:category", async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
-});
+});*/
 
 
 app.post("/category", async (req, res) => {
   const client = new MongoClient(url);
   await client.connect();
 
-  const db = client.db("session");
+  const db = client.db("skillduels");
   const collec = db.collection("duel");
 
   const { category } = req.body;
@@ -549,7 +558,7 @@ app.get("/category1", async (req, res) => {
   const client = new MongoClient(url);
   await client.connect();
 
-  const db = client.db("session");
+  const db = client.db("skillduels");
   const collec = db.collection("duel");
 
   const selected = await collec.findOne({}, { sort: { _id: -1 } });
@@ -557,6 +566,57 @@ app.get("/category1", async (req, res) => {
   await client.close();
   res.json(selected);
 });
+
+app.get("/categories/by-name/:categoryName", async (req, res) => {
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const db = client.db("skillduels");
+
+    const categoryDoc = await db.collection("categories").findOne({
+      name: req.params.categoryName
+    });
+    console.log("Category document:", categoryDoc);
+
+    if (!categoryDoc) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    res.json({
+      categoryId: categoryDoc._id,
+      timePerQuestion: categoryDoc.timePerQuestion
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  } finally {
+    await client.close();
+  }
+});
+
+app.get("/quiz/by-category/:categoryId", async (req, res) => {
+  const client = new MongoClient(url);
+  try {
+    await client.connect();
+    const db = client.db("skillduels");
+
+    const questions = await db
+      .collection("questions")
+      .find({ category: new ObjectId(req.params.categoryId) })
+      .limit(10)
+      .toArray();
+      console.log("Questions fetched:", questions);
+console.log("Questions count:", questions.length);
+
+    res.json(questions);
+   
+
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  } finally {
+    await client.close();
+  }
+});
+
 
 
 

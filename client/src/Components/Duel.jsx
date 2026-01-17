@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSocket } from "./SocketContext";
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import "./Duel.css";
 
 function Duel() {
   const { socket } = useSocket();
+  const navigate = useNavigate();
 
   const [roomId, setRoomId] = useState("");
   const [category, setCategory] = useState("");
+
+  const [categoryId, setCategoryId] = useState("");
+  const [timePerQuestion, setTimePerQuestion] = useState(0);
 
   const [questions, setQuestions] = useState([]);
   const [currentQ, setCurrentQ] = useState(0);
@@ -23,84 +27,87 @@ function Duel() {
   const [lockedQuestions, setLockedQuestions] = useState({});
   const [questionTimeLeft, setQuestionTimeLeft] = useState({});
   const [quizFinished, setQuizFinished] = useState(false);
+
   const user = localStorage.getItem("username");
-  console.log(user)
 
-  const navigate=useNavigate()
-
-  /* FETCH CATEGORY */
+  /* FETCH SELECTED CATEGORY (DO NOT CHANGE) */
   useEffect(() => {
-    axios.get("http://localhost:9000/category1").then((res) => {
+    axios.get("http://localhost:9000/category1").then(async (res) => {
       setRoomId(res.data._id);
       setCategory(res.data.category);
-      console.log(res.data.category)
+
+      // fetch category metadata
+      const catRes = await axios.get(
+        `http://localhost:9000/categories/by-name/${res.data.category}`
+      );
+
+      setCategoryId(catRes.data.categoryId);
+      setTimePerQuestion(catRes.data.timePerQuestion);
+      console.log(catRes.data.categoryId)
     });
   }, []);
 
   /* JOIN ROOM */
   useEffect(() => {
-    if (socket && roomId) 
-      {socket.emit("join-room", {
-      roomId,
-      username: localStorage.getItem("username")
-    });}
-  }, [socket, roomId]);
+    if (socket && roomId) {
+      socket.emit("join-room", {
+        roomId,
+        username: user
+      });
+    }
+  }, [socket, roomId, user]);
 
-  /* COUNTDOWN */
+  /* COUNTDOWN BEFORE QUIZ START */
   useEffect(() => {
     if (quizStarted) return;
+    if (!categoryId || !timePerQuestion) return;
 
     const timer = setInterval(() => {
-      setCountdown((p) => {
-        if (p === 1) {
+      setCountdown((prev) => {
+        if (prev === 1) {
           clearInterval(timer);
           startQuiz();
-           
           return 0;
         }
-        return p - 1;
+        return prev - 1;
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [quizStarted, category]);
+  }, [quizStarted, categoryId, timePerQuestion]);
 
-  useEffect(() => {
-  if (!quizFinished) return;
-
-  socket.emit("submit-quiz", { roomId, answers });
-
-  navigate(`/duelresult/${roomId}`); // ✅ SAFE
-
-}, [quizFinished]);
-
-
+  /* START QUIZ */
   const startQuiz = async () => {
-    if (!category) return;
+    if (!categoryId) return;
 
     setQuizStarted(true);
 
     const res = await axios.get(
-      `http://localhost:9000/quiz/${category}`
+      `http://localhost:9000/quiz/by-category/${categoryId}`
     );
 
-    const qs = res.data;
+    const qs = res.data.map((q) => ({
+      ...q,
+      timelimit: timePerQuestion
+    }));
     console.log(qs)
+
     setQuestions(qs);
 
-    let total = 0;
     const timeMap = {};
-    qs.forEach((q, i) => {
-      const t = getTimeInSeconds(q.timelimit);
-      total += t;
-      timeMap[i] = t;
+    qs.forEach((_, i) => {
+      timeMap[i] = timePerQuestion;
     });
 
-    setTotalTimer(total);
     setQuestionTimeLeft(timeMap);
-    setQuestionTimer(timeMap[0]);
+    setQuestionTimer(timePerQuestion);
+    setTotalTimer(qs.length * timePerQuestion);
 
-    socket.emit("start-quiz", { roomId, questions: qs,username:user });
+    socket.emit("start-quiz", {
+      roomId,
+      questions: qs,
+      username: user
+    });
   };
 
   /* TOTAL TIMER */
@@ -108,13 +115,13 @@ function Duel() {
     if (!quizStarted) return;
 
     const t = setInterval(() => {
-      setTotalTimer((p) => {
-        if (p <= 1) {
+      setTotalTimer((prev) => {
+        if (prev <= 1) {
           clearInterval(t);
           submitQuiz();
           return 0;
         }
-        return p - 1;
+        return prev - 1;
       });
     }, 1000);
 
@@ -128,30 +135,34 @@ function Duel() {
     setQuestionTimer(questionTimeLeft[currentQ]);
 
     const t = setInterval(() => {
-      setQuestionTimer((p) => {
-        if (p <= 1) {
+      setQuestionTimer((prev) => {
+        if (prev <= 1) {
           clearInterval(t);
           setLockedQuestions((x) => ({ ...x, [currentQ]: true }));
           setQuestionTimeLeft((x) => ({ ...x, [currentQ]: 0 }));
           return 0;
         }
-        setQuestionTimeLeft((x) => ({ ...x, [currentQ]: p - 1 }));
-        return p - 1;
+        setQuestionTimeLeft((x) => ({ ...x, [currentQ]: prev - 1 }));
+        return prev - 1;
       });
     }, 1000);
 
     return () => clearInterval(t);
-  }, [currentQ, quizStarted, questions]);
+  }, [currentQ, quizStarted, questions, questionTimeLeft]);
 
-  const getTimeInSeconds = (t) => {
-    const [n, u] = t.split(" ");
-    return u.startsWith("min") ? parseInt(n) * 60 : parseInt(n);
-  };
-
+  /* SUBMIT QUIZ */
   const submitQuiz = () => {
     if (quizFinished) return;
     setQuizFinished(true);
   };
+
+  /* SEND RESULTS & NAVIGATE */
+  useEffect(() => {
+    if (!quizFinished) return;
+
+    socket.emit("submit-quiz", { roomId, answers });
+    navigate(`/duelresult/${roomId}`);
+  }, [quizFinished, roomId, answers, socket, navigate]);
 
   return (
     <div className="duel-container">
@@ -178,13 +189,12 @@ function Duel() {
               {questions[currentQ].options.map((opt, idx) => (
                 <button
                   key={idx}
-                
                   disabled={lockedQuestions[currentQ]}
                   className={`option-btn ${
-                  answers[currentQ] === opt ? "option-selected" : ""
+                    answers[currentQ] === opt ? "option-selected" : ""
                   }`}
                   onClick={() =>
-                    setAnswers((p) => ({ ...p, [currentQ]: opt }))
+                    setAnswers((prev) => ({ ...prev, [currentQ]: opt }))
                   }
                 >
                   {opt}
@@ -194,13 +204,19 @@ function Duel() {
 
             <div className="nav-buttons">
               {currentQ > 0 && (
-                <button className="prev-btn" onClick={() => setCurrentQ(currentQ - 1)}>
+                <button
+                  className="prev-btn"
+                  onClick={() => setCurrentQ(currentQ - 1)}
+                >
                   Previous
                 </button>
               )}
 
               {currentQ < questions.length - 1 && (
-                <button className="next-btn" onClick={() => setCurrentQ(currentQ + 1)}>
+                <button
+                  className="next-btn"
+                  onClick={() => setCurrentQ(currentQ + 1)}
+                >
                   Next
                 </button>
               )}

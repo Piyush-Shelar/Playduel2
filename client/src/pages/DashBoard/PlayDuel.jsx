@@ -22,16 +22,14 @@ export default function PlayDuel() {
 
   },[])
 
-  function handleCategory(category)
-  {
-    const data=category
-    axios.post("http://localhost:9000/category",{
+  function handleCategory(categoryName) {
+  axios.post("http://localhost:9000/category", {
+    category: categoryName
+  })
+  .then((res) => console.log(res.data))
+  .catch((err) => console.log(err));
+}
 
-      category:data
-    })
-    .then((res)=>{console.log(res)})
-    .catch((err)=>{console.log(err)})
-  }
 
 
 
@@ -69,12 +67,11 @@ export default function PlayDuel() {
               key={idx}
               whileHover={{ scale: 1.05 }}
               className={`relative p-6 rounded-3xl cursor-pointer border border-white/20 shadow-xl overflow-hidden group`}
-             onClick={(()=>{
+            onClick={() => {
+          handleCategory(domain.name);
+           navigate("/invitefriends");
+             }}
 
-             handleCategory(domain.name)
-              navigate("/invitefriends")
-              //navigate(`/friends/${domain.name}`)
-             })}
             >
               {/* Glow */}
               <div className={`absolute inset-0 bg-gradient-to-br ${domain.color} opacity-25 blur-2xl group-hover:opacity-40 transition`} />
@@ -82,7 +79,7 @@ export default function PlayDuel() {
               {/* Card Content */}
               <div className="relative z-10 flex flex-col items-center justify-center gap-4">
                 <h2 className="text-2xl font-bold text-white">{domain.name}</h2>
-                <p className="text-white/70">{domain.xp}</p>
+                <p className="text-white/70">{domain.difficulty}</p>
                 <motion.div
                   className="w-20 h-20 bg-white/5 rounded-full border border-white/20 shadow-inner flex items-center justify-center text-[#1f5cff] font-bold text-lg"
                   whileHover={{ rotate: 360 }}
