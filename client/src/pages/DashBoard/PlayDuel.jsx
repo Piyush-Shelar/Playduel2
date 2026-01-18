@@ -1,37 +1,37 @@
-import React, { useState,useContext,useEffect                                                                                            } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaBolt, FaBrain, FaClock, FaTrophy } from "react-icons/fa";
-import axios from "axios"
-import { CatContext,IdContext } from "../../Components/Appcontext";
-import {useNavigate} from "react-router-dom"
+import axios from "axios";
+import { CatContext, IdContext } from "../../Components/Appcontext";
+import { useNavigate } from "react-router-dom";
 
 export default function PlayDuel() {
- const [quizdomains,setQuizdomains]=useState([])
-
+  const [quizdomains, setQuizdomains] = useState([]);
   const [selectedQuiz, setSelectedQuiz] = useState("");
+  const navigate = useNavigate("");
+  const { userId } = useContext(IdContext);
 
-  const navigate=useNavigate("")
-  const {userId}=useContext(IdContext)
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 
-  useEffect(()=>{
-
-   axios.get("http://localhost:9000/categories")
-   .then((res)=>{setQuizdomains(res.data);console.log(res.data)})
-   .catch((err)=>{console.log(err)})
-  
-
-  },[])
+  useEffect(() => {
+    axios
+      .get(`${API_BASE_URL}/categories`)
+      .then((res) => {
+        setQuizdomains(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   /*function handleCategory(categoryName) {
-  axios.post("http://localhost:9000/category", {
-    category: categoryName
-  })
-  .then((res) => console.log(res.data))
-  .catch((err) => console.log(err));
-}*/
-
-
-
+    axios.post(`${API_BASE_URL}/category`, {
+      category: categoryName
+    })
+    .then((res) => console.log(res.data))
+    .catch((err) => console.log(err));
+  }*/
 
   const handleStartMatch = () => {
     if (!selectedQuiz) {
@@ -67,19 +67,21 @@ export default function PlayDuel() {
               key={idx}
               whileHover={{ scale: 1.05 }}
               className={`relative p-6 rounded-3xl cursor-pointer border border-white/20 shadow-xl overflow-hidden group`}
-            onClick={() => {
-          /*handleCategory(domain.name);*/
-           navigate("/invitefriends",{
-            state:{
-              category:domain.name
-            }
-           });
-             }}
-
+              onClick={() => {
+                console.log("p"+domain.name)
+                /*handleCategory(domain.name);*/
+                navigate("/invitefriends", {
+                  state: {
+                    category: domain.name,
+                  },
+                });
+              }}
             >
               {/* Glow */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${domain.color} opacity-25 blur-2xl group-hover:opacity-40 transition`} />
-              
+              <div
+                className={`absolute inset-0 bg-gradient-to-br ${domain.color} opacity-25 blur-2xl group-hover:opacity-40 transition`}
+              />
+
               {/* Card Content */}
               <div className="relative z-10 flex flex-col items-center justify-center gap-4">
                 <h2 className="text-2xl font-bold text-white">{domain.name}</h2>

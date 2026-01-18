@@ -7,12 +7,14 @@ export default function DashboardArena() {
   
    const [allQuizzes,setallQuizzes]=useState([])
    const navigate=useNavigate("")
+
+   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; 
   
 
   useEffect(()=>{
 
   //  axios.get("http://localhost:4080/api/users/categories")
-    axios.get("http://localhost:9000/categories")
+    axios.get(`${API_BASE_URL}/categories`)
    .then((res)=>{setallQuizzes(res.data);console.log(res.data)})
    .catch((err)=>{console.log(err)})
   

@@ -24,10 +24,12 @@ function Singleplayer() {
   const [categoryId, setCategoryId] = useState("");
   const [timePerQuestion, setTimePerQuestion] = useState(0);
 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+
   /* ---------- FETCH CATEGORY META ---------- */
   useEffect(() => {
     axios
-      .get(`http://localhost:9000/categories/by-name/${category}`)
+      .get(`${API_BASE_URL}/categories/by-name/${category}`)
       .then((res) => {
         setCategoryId(res.data.categoryId);
         setTimePerQuestion(res.data.timePerQuestion);
@@ -62,7 +64,7 @@ function Singleplayer() {
     setQuizStarted(true);
 
     const res = await axios.get(
-      `http://localhost:9000/quiz/by-category/${categoryId}`
+      `${API_BASE_URL}/quiz/by-category/${categoryId}`
     );
 
     const qs = res.data;

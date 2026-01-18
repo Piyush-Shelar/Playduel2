@@ -11,6 +11,7 @@ const InviteModal = () => {
   if (!invite) return null;
 
   const acceptInvite = () => {
+    console.log("im"+invite.category)
     socket.emit("accept-invite", {
       from: invite.from,
       to: id,

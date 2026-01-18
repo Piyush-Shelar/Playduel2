@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSocket } from "./SocketContext";
-import { useNavigate,useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./Duel.css";
 
 function Duel() {
   const { socket } = useSocket();
   const navigate = useNavigate();
-
-  
-  
 
   const [categoryId, setCategoryId] = useState("");
   const [timePerQuestion, setTimePerQuestion] = useState(0);
@@ -29,40 +26,36 @@ function Duel() {
   const [quizFinished, setQuizFinished] = useState(false);
 
   const user = localStorage.getItem("username");
-  const {state}=useLocation();
-  const category=state?.category
-  const roomId=state?.roomId
+  const { state } = useLocation();
+  const category = state?.category;
+  const roomId = state?.roomId;
 
-  console.log(category)
-  console.log(roomId)
+  console.log("d"+category);
+  console.log("r"+roomId);
+
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 
   /* FETCH SELECTED CATEGORY (DO NOT CHANGE) */
   useEffect(() => {
-   
-
-      // fetch category metadata
-    axios.get(
-        `http://localhost:9000/categories/by-name/${category}`
-      )
-      .then((res)=>{
-         setCategoryId(res.data.categoryId);
-      setTimePerQuestion(res.data.timePerQuestion);
-      console.log(res.data.categoryId)
-
+    // fetch category metadata
+    axios
+      .get(`${API_BASE_URL}/categories/by-name/${category}`)
+      .then((res) => {
+        setCategoryId(res.data.categoryId);
+        setTimePerQuestion(res.data.timePerQuestion);
+        console.log(res.data.categoryId);
       })
-      .catch((err)=>{
-        console.log(err)
-      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [category, roomId]);
 
-     
-    },[category,roomId]);
- 
   /* JOIN ROOM */
   useEffect(() => {
     if (socket && roomId) {
       socket.emit("join-room", {
         roomId,
-        username: user
+        username: user,
       });
     }
   }, [socket, roomId, user]);
@@ -93,14 +86,14 @@ function Duel() {
     setQuizStarted(true);
 
     const res = await axios.get(
-      `http://localhost:9000/quiz/by-category/${categoryId}`
+      `${API_BASE_URL}/quiz/by-category/${categoryId}`
     );
 
     const qs = res.data.map((q) => ({
       ...q,
-      timelimit: timePerQuestion
+      timelimit: timePerQuestion,
     }));
-    console.log(qs)
+    console.log(qs);
 
     setQuestions(qs);
 
@@ -116,7 +109,7 @@ function Duel() {
     socket.emit("start-quiz", {
       roomId,
       questions: qs,
-      username: user
+      username: user,
     });
   };
 

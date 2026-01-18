@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const SocketContext = createContext();
 
-const socket = io("http://localhost:9000");
+const socket = io(import.meta.env.VITE_SOCKET_URL || "http://localhost:4000");
 
 export const SocketProvider = ({ children }) => {
   const [invite, setInvite] = useState(null);
@@ -15,21 +15,23 @@ export const SocketProvider = ({ children }) => {
     const username = localStorage.getItem("username");
 
     if (userId && username) {
-  socket.emit("register-user", { userId, username });
-}
+      socket.emit("register-user", { userId, username });
+    }
 
     /* =======================
        DUEL LOGIC
     ======================= */
-    socket.on("receive-invite", ({ from,category }) => {
-      setInvite({from,category});
+    socket.on("receive-invite", ({ from, category }) => {
+      setInvite({ from, category });
+      console.log("sc"+category)
     });
 
-    socket.on("start-match", (roomId,category) => {
-      navigate("/duel",{
-        state:{
-          roomId:roomId,
-          category:category
+    socket.on("start-match", (roomId, category) => {
+      console.log("sm"+category)
+      navigate("/duel", {
+        state: {
+          roomId: roomId,
+          category: category
         }
       });
     });
@@ -44,13 +46,12 @@ export const SocketProvider = ({ children }) => {
     });
 
     socket.on("chat-rejected", ({ by }) => {
-  alert("Chat request rejected");
-});
-
+      alert("Chat request rejected");
+    });
 
     // 🔹 chat accepted
     socket.on("chat-started", ({ roomId }) => {
-      console.log("s "+roomId)
+      console.log("s " + roomId);
       navigate(`/chat/${roomId}`);
     });
 
@@ -60,7 +61,6 @@ export const SocketProvider = ({ children }) => {
       socket.off("receive-chat-request");
       socket.off("chat-started");
       socket.off("chat-rejected");
-
     };
   }, []);
 
