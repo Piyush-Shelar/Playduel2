@@ -12,15 +12,16 @@ const InviteModal = () => {
 
   const acceptInvite = () => {
     socket.emit("accept-invite", {
-      from: invite,
-      to: id
+      from: invite.from,
+      to: id,
+      category:invite.category
     });
     setInvite(null);
   };
 
   const rejectInvite = () => {
     socket.emit("reject-invite", {
-      from: invite,
+      from: invite.from,
       to: id
     });
     setInvite(null);

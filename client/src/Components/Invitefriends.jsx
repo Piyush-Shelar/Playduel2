@@ -3,7 +3,7 @@ import { IdContext } from "./Appcontext"
 import "./All.css"
 import axios from "axios"
 import { useSocket } from "./SocketContext";
-import {useParams} from "react-router-dom"
+import {useParams,useLocation} from "react-router-dom"
 
 
 
@@ -15,7 +15,9 @@ function Invitefriends()
     const [friends,setFriends]=useState([])
     const {id}=useContext(IdContext)
      const { socket } = useSocket();
-     const {category}=useParams()
+     const {state}=useLocation()
+     const category=state?.category
+
 
     useEffect(()=>{
     
@@ -39,7 +41,8 @@ function Invitefriends()
         console.log(friend_id)
         socket.emit("send-invite", {
          from: userid,
-         to: friend_id
+         to: friend_id,
+         category
          
     });
 

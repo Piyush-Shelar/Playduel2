@@ -44,12 +44,12 @@ io.on("connection", (socket) => {
   console.log("Registered:", userId, username);
   });
 
-  socket.on("send-invite", ({ from, to }) => {
+  socket.on("send-invite", ({ from, to,category }) => {
     const receiverSocket = onlineUsers[to];
     console.log("s"+from)
     console.log("r"+to)
     if (receiverSocket) {
-      io.to(receiverSocket).emit("receive-invite", { from });
+      io.to(receiverSocket).emit("receive-invite", { from,category });
     }
   });
 
@@ -60,9 +60,11 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("accept-invite", async ({ from, to }) => {
+  socket.on("accept-invite", async ({ from, to,category }) => {
     try {
-      const client = new MongoClient(url);
+       const roomId = [from, to].sort().join("-");
+
+      /*const client = new MongoClient(url);
       await client.connect();
 
       const db = client.db("skillduels");
@@ -71,13 +73,13 @@ io.on("connection", (socket) => {
       const selected = await collec.findOne({}, { sort: { _id: -1 } });
       if (!selected) return;
 
-      const roomId = selected._id.toString();
+      const roomId = selected._id.toString();*/
 
       if (onlineUsers[from]) {
-        io.to(onlineUsers[from]).emit("start-match", roomId);
+        io.to(onlineUsers[from]).emit("start-match", roomId,category);
       }
       if (onlineUsers[to]) {
-        io.to(onlineUsers[to]).emit("start-match", roomId);
+        io.to(onlineUsers[to]).emit("start-match", roomId,category);
       }
 
       await client.close();
@@ -624,4 +626,3 @@ console.log("Questions count:", questions.length);
 server.listen(9000, () => {
   console.log("Server + Socket.IO running on http://localhost:9000");
 });
-

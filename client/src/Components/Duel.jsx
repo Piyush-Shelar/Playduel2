@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSocket } from "./SocketContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import "./Duel.css";
 
 function Duel() {
   const { socket } = useSocket();
   const navigate = useNavigate();
 
-  const [roomId, setRoomId] = useState("");
-  const [category, setCategory] = useState("");
+  
+  
 
   const [categoryId, setCategoryId] = useState("");
   const [timePerQuestion, setTimePerQuestion] = useState(0);
@@ -29,24 +29,34 @@ function Duel() {
   const [quizFinished, setQuizFinished] = useState(false);
 
   const user = localStorage.getItem("username");
+  const {state}=useLocation();
+  const category=state?.category
+  const roomId=state?.roomId
+
+  console.log(category)
+  console.log(roomId)
 
   /* FETCH SELECTED CATEGORY (DO NOT CHANGE) */
   useEffect(() => {
-    axios.get("http://localhost:9000/category1").then(async (res) => {
-      setRoomId(res.data._id);
-      setCategory(res.data.category);
+   
 
       // fetch category metadata
-      const catRes = await axios.get(
-        `http://localhost:9000/categories/by-name/${res.data.category}`
-      );
+    axios.get(
+        `http://localhost:9000/categories/by-name/${category}`
+      )
+      .then((res)=>{
+         setCategoryId(res.data.categoryId);
+      setTimePerQuestion(res.data.timePerQuestion);
+      console.log(res.data.categoryId)
 
-      setCategoryId(catRes.data.categoryId);
-      setTimePerQuestion(catRes.data.timePerQuestion);
-      console.log(catRes.data.categoryId)
-    });
-  }, []);
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
 
+     
+    },[category,roomId]);
+ 
   /* JOIN ROOM */
   useEffect(() => {
     if (socket && roomId) {

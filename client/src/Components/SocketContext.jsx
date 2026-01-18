@@ -21,12 +21,17 @@ export const SocketProvider = ({ children }) => {
     /* =======================
        DUEL LOGIC
     ======================= */
-    socket.on("receive-invite", ({ from }) => {
-      setInvite(from);
+    socket.on("receive-invite", ({ from,category }) => {
+      setInvite({from,category});
     });
 
-    socket.on("start-match", (roomId) => {
-      navigate("/duel");
+    socket.on("start-match", (roomId,category) => {
+      navigate("/duel",{
+        state:{
+          roomId:roomId,
+          category:category
+        }
+      });
     });
 
     /* =======================

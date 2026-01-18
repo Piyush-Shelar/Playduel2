@@ -22,13 +22,13 @@ export default function PlayDuel() {
 
   },[])
 
-  function handleCategory(categoryName) {
+  /*function handleCategory(categoryName) {
   axios.post("http://localhost:9000/category", {
     category: categoryName
   })
   .then((res) => console.log(res.data))
   .catch((err) => console.log(err));
-}
+}*/
 
 
 
@@ -68,8 +68,12 @@ export default function PlayDuel() {
               whileHover={{ scale: 1.05 }}
               className={`relative p-6 rounded-3xl cursor-pointer border border-white/20 shadow-xl overflow-hidden group`}
             onClick={() => {
-          handleCategory(domain.name);
-           navigate("/invitefriends");
+          /*handleCategory(domain.name);*/
+           navigate("/invitefriends",{
+            state:{
+              category:domain.name
+            }
+           });
              }}
 
             >
